@@ -8,5 +8,8 @@
   },
   "deploy": {
     "startCommand": "gunicorn config.wsgi --bind 0.0.0.0:$PORT"
+  },
+  "variables": {
+    "PYTHON_VERSION": "3.12.6"
   }
 }
