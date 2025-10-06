@@ -1,0 +1,12 @@
+{
+  "builder": "NIXPACKS",
+  "build": {
+    "commands": [
+      "python manage.py collectstatic --noinput",
+      "python manage.py migrate"
+    ]
+  },
+  "deploy": {
+    "startCommand": "gunicorn config.wsgi --bind 0.0.0.0:$PORT"
+  }
+}

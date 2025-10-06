@@ -11,7 +11,7 @@ sys.path.insert(0, str(BASE_DIR))
 # Security settings
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key-change-in-production')
 DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,*.railway.app,*.up.railway.app,resnovate.in,www.resnovate.in', cast=lambda v: [s.strip() for s in v.split(',')])
 
 # Application definition
 INSTALLED_APPS = [

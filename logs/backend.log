@@ -18,3 +18,15 @@ Watching for file changes with StatReloader
 [06/Oct/2025 07:42:18] "GET /api/blog-posts/ HTTP/1.1" 200 52
 [06/Oct/2025 07:42:40] "GET /api/consultation-slots/available/ HTTP/1.1" 200 6865
 [06/Oct/2025 07:42:41] "GET /api/consultation-slots/available/ HTTP/1.1" 200 6865
+/home/gss/Documents/projects/resnovate/resnovate-platform/backend/config/settings.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+October 06, 2025 - 06:45:08
+Django version 4.2.7, using settings 'config.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+/home/gss/Documents/projects/resnovate/resnovate-platform/backend/venv/lib/python3.12/site-packages/rest_framework_simplejwt/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import DistributionNotFound, get_distribution
+Watching for file changes with StatReloader

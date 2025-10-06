@@ -1,5 +1,6 @@
 {
   "buildCommand": "npm run build",
+  "installCommand": "npm install --legacy-peer-deps",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "rewrites": [
@@ -28,7 +29,7 @@
     }
   ],
   "env": {
-    "NEXT_PUBLIC_API_URL": "@api_url",
+    "NEXT_PUBLIC_API_URL": "https://resnovate-backend.up.railway.app",
     "NEXT_PUBLIC_SITE_URL": "https://resnovate.in"
   }
 }
