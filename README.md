@@ -1,6 +1,6 @@
 # Resnovate.ai Platform
 
-A comprehensive AI-powered real estate platform combining a Django REST API backend with a Next.js frontend. This platform provides real estate professionals with AI-driven insights, automated workflows, and innovative solutions for property development and management.
+A comprehensive AI consulting platform combining a Django REST API backend with a Next.js frontend. This platform helps businesses transform through AI-driven strategies, machine learning implementation, process automation, and data analytics solutions.
 
 ## 🏗️ Architecture Overview
 
@@ -376,4 +376,4 @@ This project is proprietary software. All rights reserved.
 
 **Built with ❤️ by the Resnovate.ai team**
 
-*Transforming real estate through AI innovation*# resnovate
+*Transforming businesses through AI innovation*# resnovate

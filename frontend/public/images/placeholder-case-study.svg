@@ -1,0 +1,10 @@
+<svg width="400" height="240" viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="240" fill="#F3F4F6"/>
+  <rect x="50" y="50" width="300" height="140" fill="#E5E7EB" rx="8"/>
+  <circle cx="120" cy="100" r="20" fill="#D1D5DB"/>
+  <rect x="160" y="90" width="160" height="8" fill="#D1D5DB" rx="4"/>
+  <rect x="160" y="110" width="120" height="6" fill="#E5E7EB" rx="3"/>
+  <rect x="160" y="125" width="80" height="6" fill="#E5E7EB" rx="3"/>
+  <rect x="70" y="160" width="60" height="20" fill="#3B82F6" rx="4"/>
+  <text x="200" y="200" font-family="Arial, sans-serif" font-size="12" fill="#6B7280" text-anchor="middle">Case Study Image</text>
+</svg>
