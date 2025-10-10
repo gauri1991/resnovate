@@ -72,11 +72,11 @@ class Migration(migrations.Migration):
         ),
         # Update existing name field based on first_name and last_name if needed
         migrations.RunSQL(
-            "UPDATE leads_lead SET first_name = COALESCE(SUBSTR(name, 1, INSTR(name || ' ', ' ') - 1), name, '') WHERE name IS NOT NULL AND name != '';",
+            "UPDATE leads_lead SET first_name = COALESCE(split_part(name, ' ', 1), name, '') WHERE name IS NOT NULL AND name != '';",
             reverse_sql="UPDATE leads_lead SET name = first_name || ' ' || last_name WHERE first_name IS NOT NULL OR last_name IS NOT NULL;"
         ),
         migrations.RunSQL(
-            "UPDATE leads_lead SET last_name = COALESCE(SUBSTR(name, INSTR(name || ' ', ' ') + 1), '') WHERE name IS NOT NULL AND name != '' AND INSTR(name, ' ') > 0;",
+            "UPDATE leads_lead SET last_name = COALESCE(split_part(name, ' ', 2), '') WHERE name IS NOT NULL AND name != '' AND position(' ' in name) > 0;",
             reverse_sql="UPDATE leads_lead SET name = first_name || ' ' || last_name WHERE first_name IS NOT NULL OR last_name IS NOT NULL;"
         ),
         # Convert message to description if description is empty
