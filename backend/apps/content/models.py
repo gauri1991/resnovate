@@ -191,3 +191,35 @@ class MediaFile(models.Model):
     def thumbnail_url(self):
         # In a real app, you'd generate thumbnails
         return self.url if self.category == 'image' else ''
+
+
+class PageSection(models.Model):
+    """Model for CMS-managed page sections"""
+
+    PAGE_CHOICES = [
+        ('homepage', 'Homepage'),
+        ('about', 'About Page'),
+        ('services', 'Services Page'),
+        ('case_studies', 'Case Studies Page'),
+        ('research_insights', 'Research Insights Page'),
+        ('contact', 'Contact Page'),
+        ('resources', 'Resources Page'),
+    ]
+
+    page_identifier = models.CharField(max_length=50, choices=PAGE_CHOICES)
+    section_name = models.CharField(max_length=100)
+    section_key = models.CharField(max_length=100)  # Unique identifier for the section (e.g., 'hero', 'stats', 'features')
+    enabled = models.BooleanField(default=True)
+    order = models.IntegerField(default=0)
+    content = models.JSONField(default=dict, blank=True)  # Store section-specific content
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['page_identifier', 'order']
+        unique_together = ['page_identifier', 'section_key']
+        verbose_name = 'Page Section'
+        verbose_name_plural = 'Page Sections'
+
+    def __str__(self):
+        return f"{self.get_page_identifier_display()} - {self.section_name}"

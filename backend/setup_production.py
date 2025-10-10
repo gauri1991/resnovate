@@ -70,6 +70,35 @@ def setup_production():
         print(f"⚠️  Static files collection failed: {e}")
         # Don't return False here as this isn't critical
     
+    # 4. Seed CMS sections if they don't exist
+    print("🌱 Checking CMS sections...")
+    try:
+        from apps.content.models import PageSection
+
+        if not PageSection.objects.exists():
+            print("🔧 Seeding CMS sections...")
+            import subprocess
+            result = subprocess.run(
+                [sys.executable, 'seed_cms_sections.py'],
+                cwd=os.path.dirname(os.path.abspath(__file__)),
+                capture_output=True,
+                text=True
+            )
+
+            if result.returncode == 0:
+                print("✅ CMS sections seeded successfully!")
+                print(result.stdout)
+            else:
+                print(f"⚠️  CMS seeding had issues: {result.stderr}")
+                # Don't fail deployment if seeding fails
+        else:
+            section_count = PageSection.objects.count()
+            print(f"✅ CMS sections already exist ({section_count} sections)")
+
+    except Exception as e:
+        print(f"⚠️  Error checking/seeding CMS sections: {e}")
+        # Don't return False here as this isn't critical for deployment
+
     print("🎉 Production setup completed successfully!")
     return True
 

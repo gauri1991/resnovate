@@ -9,7 +9,7 @@ from rest_framework_simplejwt.views import (
 )
 from django.views.decorators.csrf import csrf_exempt
 
-from apps.content.views import BlogPostViewSet, CaseStudyViewSet, ServiceViewSet, MediaFileViewSet, dashboard_stats
+from apps.content.views import BlogPostViewSet, CaseStudyViewSet, ServiceViewSet, MediaFileViewSet, PageSectionViewSet, dashboard_stats
 from apps.leads.views import LeadViewSet, NewsletterSubscriberViewSet
 from apps.consultations.views import ConsultationSlotViewSet, BookingViewSet
 from apps.users.views import current_user
@@ -20,6 +20,7 @@ router.register(r'blog-posts', BlogPostViewSet, basename='blogpost')
 router.register(r'case-studies', CaseStudyViewSet, basename='casestudy')
 router.register(r'services', ServiceViewSet, basename='service')
 router.register(r'media', MediaFileViewSet, basename='mediafile')
+router.register(r'cms/page-sections', PageSectionViewSet, basename='pagesection')
 router.register(r'leads', LeadViewSet, basename='lead')
 router.register(r'newsletter', NewsletterSubscriberViewSet, basename='newsletter')
 router.register(r'consultation-slots', ConsultationSlotViewSet, basename='consultationslot')

@@ -12,6 +12,7 @@ import {
 import LeadCaptureForm from '../../components/LeadCaptureForm';
 import { contentAPI } from '../../lib/api';
 import { CaseStudy } from '../../types';
+import { useCMSContent } from '@/hooks/useCMSContent';
 
 const industries = [
   'All Industries',
@@ -23,29 +24,18 @@ const industries = [
   'Mixed-Use',
 ];
 
-const metrics = [
-  {
-    label: 'Average ROI Improvement',
-    value: '35%',
-    icon: ChartBarIcon,
-  },
-  {
-    label: 'Projects Completed',
-    value: '150+',
-    icon: BuildingOfficeIcon,
-  },
-  {
-    label: 'Client Satisfaction',
-    value: '98%',
-    icon: TrophyIcon,
-  },
-];
+const iconMapping: Record<string, any> = {
+  'Average ROI Improvement': ChartBarIcon,
+  'Projects Completed': BuildingOfficeIcon,
+  'Client Satisfaction': TrophyIcon,
+};
 
 export default function CaseStudies() {
   const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
   const [filteredStudies, setFilteredStudies] = useState<CaseStudy[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedIndustry, setSelectedIndustry] = useState('All Industries');
+  const { sections, loading } = useCMSContent('case_studies');
 
   useEffect(() => {
     const fetchCaseStudies = async () => {
@@ -94,11 +84,10 @@ export default function CaseStudies() {
             className="mx-auto max-w-2xl text-center"
           >
             <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-              Success <span className="text-gradient">Stories</span>
+              {sections.header?.title || 'Success Stories'}
             </h1>
             <p className="mt-6 text-lg leading-8 text-slate-600">
-              Discover how our AI-powered solutions have transformed real estate businesses 
-              across industries, delivering measurable results and competitive advantages.
+              {sections.header?.description || 'Discover how our AI-powered solutions have transformed real estate businesses across industries, delivering measurable results and competitive advantages.'}
             </p>
           </motion.div>
         </div>
@@ -108,33 +97,36 @@ export default function CaseStudies() {
       <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-900">Proven Results</h2>
+            <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.metrics?.subtitle || 'Proven Results'}</h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              Real Impact, Measurable Success
+              {sections.metrics?.title || 'Real Impact, Measurable Success'}
             </p>
           </div>
 
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
             <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-3 lg:gap-y-16">
-              {metrics.map((metric, index) => (
-                <motion.div
-                  key={metric.label}
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="relative pl-16 text-center lg:text-left"
-                >
-                  <dt className="text-base font-semibold leading-7 text-slate-900">
-                    <div className="absolute left-1/2 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-900 lg:left-0 transform -translate-x-1/2 lg:transform-none">
-                      <metric.icon className="h-6 w-6 text-white" aria-hidden="true" />
-                    </div>
-                    {metric.label}
-                  </dt>
-                  <dd className="mt-2 text-3xl font-bold text-blue-900 sm:text-4xl">
-                    {metric.value}
-                  </dd>
-                </motion.div>
-              ))}
+              {sections.metrics_data?.metrics?.map((metric, index) => {
+                const IconComponent = iconMapping[metric.label] || ChartBarIcon;
+                return (
+                  <motion.div
+                    key={metric.label}
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="relative pl-16 text-center lg:text-left"
+                  >
+                    <dt className="text-base font-semibold leading-7 text-slate-900">
+                      <div className="absolute left-1/2 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-900 lg:left-0 transform -translate-x-1/2 lg:transform-none">
+                        <IconComponent className="h-6 w-6 text-white" aria-hidden="true" />
+                      </div>
+                      {metric.label}
+                    </dt>
+                    <dd className="mt-2 text-3xl font-bold text-blue-900 sm:text-4xl">
+                      {metric.value}
+                    </dd>
+                  </motion.div>
+                );
+              })}
             </dl>
           </div>
         </div>
@@ -256,10 +248,10 @@ export default function CaseStudies() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Ready to Create Your Own Success Story?
+              {sections.cta?.title || 'Ready to Create Your Own Success Story?'}
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-blue-100">
-              Join our growing list of successful clients and discover how AI can transform your real estate business.
+              {sections.cta?.description || 'Join our growing list of successful clients and discover how AI can transform your real estate business.'}
             </p>
           </div>
           

@@ -12,6 +12,7 @@ import {
 import NewsletterForm from '../../components/NewsletterForm';
 import { contentAPI } from '../../lib/api';
 import { BlogPost } from '../../types';
+import { useCMSContent } from '@/hooks/useCMSContent';
 
 const categories = [
   'All',
@@ -24,30 +25,13 @@ const categories = [
   'Technology Trends',
 ];
 
-const featuredTopics = [
-  {
-    title: 'AI Implementation Strategy',
-    description: 'How to successfully implement AI solutions across different business functions and industries.',
-    posts: 12,
-  },
-  {
-    title: 'Machine Learning Applications',
-    description: 'Real-world ML use cases, model deployment, and business impact measurement.',
-    posts: 8,
-  },
-  {
-    title: 'Data Analytics & BI',
-    description: 'Business intelligence solutions, data visualization, and analytics-driven decision making.',
-    posts: 15,
-  },
-];
-
 export default function ResearchInsights() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const { sections, loading } = useCMSContent('research_insights');
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -119,11 +103,10 @@ export default function ResearchInsights() {
             className="mx-auto max-w-2xl text-center"
           >
             <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-              Research <span className="text-gradient">Insights</span>
+              {sections.header?.title || 'Research Insights'}
             </h1>
             <p className="mt-6 text-lg leading-8 text-slate-600">
-              Stay ahead of the curve with our latest AI research, implementation guides, and industry insights. 
-              Discover trends, strategies, and innovations shaping the future of AI-driven business transformation.
+              {sections.header?.description || 'Stay ahead of the curve with our latest AI research, implementation guides, and industry insights. Discover trends, strategies, and innovations shaping the future of AI-driven business transformation.'}
             </p>
           </motion.div>
         </div>
@@ -133,14 +116,14 @@ export default function ResearchInsights() {
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-900">Featured Topics</h2>
+            <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.featured?.subtitle || 'Featured Topics'}</h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              Explore Key Areas of Innovation
+              {sections.featured?.title || 'Explore Key Areas of Innovation'}
             </p>
           </div>
 
           <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-8">
-            {featuredTopics.map((topic, index) => (
+            {sections.featured_topics_data?.topics?.map((topic, index) => (
               <motion.div
                 key={topic.title}
                 initial={{ opacity: 0, y: 20 }}
@@ -299,10 +282,10 @@ export default function ResearchInsights() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Stay Updated with Latest Insights
+              {sections.cta?.title || 'Stay Updated with Latest Insights'}
             </h2>
             <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-blue-100">
-              Get our latest research insights and market analysis delivered to your inbox every week.
+              {sections.cta?.description || 'Get our latest research insights and market analysis delivered to your inbox every week.'}
             </p>
           </div>
           

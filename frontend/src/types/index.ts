@@ -75,3 +75,25 @@ export interface Booking {
   meeting_link?: string;
   notes?: string;
 }
+
+export interface PageSection {
+  id: number;
+  page_identifier: string;
+  page_display_name: string;
+  section_name: string;
+  section_key: string;
+  enabled: boolean;
+  order: number;
+  content: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CMSPage {
+  name: string;
+  sections: PageSection[];
+}
+
+export interface CMSPages {
+  [key: string]: CMSPage;
+}

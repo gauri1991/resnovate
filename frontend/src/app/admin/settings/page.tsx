@@ -18,8 +18,15 @@ import {
   PlusIcon,
   TrashIcon,
   PencilIcon,
+  DocumentTextIcon,
+  ArrowsUpDownIcon,
+  EyeIcon,
+  EyeSlashIcon,
 } from '@heroicons/react/24/outline';
-import { api } from '@/lib/api';
+import { api, cmsAPI } from '@/lib/api';
+import { PageSection, CMSPages } from '@/types';
+import DynamicFormBuilder from '@/components/cms/DynamicFormBuilder';
+import FieldEditor from '@/components/cms/FieldEditor';
 
 interface SiteSettings {
   siteName: string;
@@ -166,6 +173,7 @@ const mockUsers: User[] = [
 
 const settingsTabs = [
   { id: 'general', name: 'General', icon: Cog6ToothIcon },
+  { id: 'cms', name: 'CMS', icon: DocumentTextIcon },
   { id: 'users', name: 'Users', icon: UsersIcon },
   { id: 'email', name: 'Email', icon: EnvelopeIcon },
   { id: 'security', name: 'Security', icon: ShieldCheckIcon },
@@ -180,6 +188,15 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error' | null>(null);
   const [showAddUser, setShowAddUser] = useState(false);
+
+  // CMS state
+  const [cmsPages, setCmsPages] = useState<CMSPages>({});
+  const [selectedPage, setSelectedPage] = useState('homepage');
+  const [editingSection, setEditingSection] = useState<PageSection | null>(null);
+  const [showSectionEditor, setShowSectionEditor] = useState(false);
+  const [editorViewMode, setEditorViewMode] = useState<'form' | 'json'>('form');
+  const [showFieldEditor, setShowFieldEditor] = useState(false);
+  const [jsonError, setJsonError] = useState<string | null>(null);
 
   const {
     register: registerSite,
@@ -260,6 +277,129 @@ export default function SettingsPage() {
       hour: '2-digit',
       minute: '2-digit',
     });
+  };
+
+  // Fetch CMS pages when CMS tab is active
+  useEffect(() => {
+    if (activeTab === 'cms') {
+      fetchCMSPages();
+    }
+  }, [activeTab]);
+
+  const fetchCMSPages = async () => {
+    try {
+      setLoading(true);
+      const response = await cmsAPI.getPages();
+      setCmsPages(response.data);
+    } catch (error) {
+      console.error('Error fetching CMS pages:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleSection = async (section: PageSection) => {
+    try {
+      const updatedSection = await cmsAPI.updateSection(section.id, {
+        enabled: !section.enabled
+      });
+      // Update local state
+      fetchCMSPages();
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus(null), 2000);
+    } catch (error) {
+      console.error('Error toggling section:', error);
+      setSaveStatus('error');
+    }
+  };
+
+  const handleEditSection = (section: PageSection) => {
+    setEditingSection(section);
+    setShowSectionEditor(true);
+  };
+
+  const handleSaveSection = async () => {
+    if (!editingSection) return;
+
+    // Validate section data
+    if (!editingSection.section_name?.trim()) {
+      setSaveStatus('error');
+      alert('Section name is required');
+      return;
+    }
+
+    // Validate JSON content
+    if (editorViewMode === 'json') {
+      try {
+        JSON.parse(JSON.stringify(editingSection.content));
+      } catch (err) {
+        setSaveStatus('error');
+        alert('Invalid JSON content');
+        return;
+      }
+    }
+
+    try {
+      setSaveStatus('saving');
+
+      // Only send editable fields
+      const updateData = {
+        section_name: editingSection.section_name,
+        enabled: editingSection.enabled,
+        order: editingSection.order,
+        content: editingSection.content
+      };
+
+      await cmsAPI.updateSection(editingSection.id, updateData);
+      setShowSectionEditor(false);
+      setEditingSection(null);
+      setEditorViewMode('form');
+      setJsonError(null);
+      await fetchCMSPages();
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus(null), 2000);
+    } catch (error: any) {
+      console.error('Error saving section:', error);
+      setSaveStatus('error');
+      alert(error.response?.data?.message || 'Failed to save section. Please try again.');
+    }
+  };
+
+  const handleAddField = (fieldName: string, fieldValue: any) => {
+    if (!editingSection) return;
+
+    setEditingSection({
+      ...editingSection,
+      content: {
+        ...editingSection.content,
+        [fieldName]: fieldValue
+      }
+    });
+    setShowFieldEditor(false);
+  };
+
+  const handleContentChange = (newContent: Record<string, any>) => {
+    if (!editingSection) return;
+
+    setEditingSection({
+      ...editingSection,
+      content: newContent
+    });
+  };
+
+  const handleJsonChange = (value: string) => {
+    if (!editingSection) return;
+
+    try {
+      const parsed = JSON.parse(value);
+      setEditingSection({
+        ...editingSection,
+        content: parsed
+      });
+      setJsonError(null);
+    } catch (err) {
+      setJsonError('Invalid JSON format');
+    }
   };
 
   const renderGeneralSettings = () => (
@@ -683,6 +823,358 @@ export default function SettingsPage() {
     </motion.div>
   );
 
+  const renderCMSSettings = () => {
+    const currentPageSections = cmsPages[selectedPage]?.sections || [];
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6"
+      >
+        {/* Page Selector */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <DocumentTextIcon className="h-5 w-5 mr-2" />
+            Content Management System
+          </h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Enable or disable sections on your website pages and edit their content.
+          </p>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Select Page
+            </label>
+            <select
+              value={selectedPage}
+              onChange={(e) => setSelectedPage(e.target.value)}
+              className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="homepage">Homepage</option>
+              <option value="about">About Page</option>
+              <option value="services">Services Page</option>
+              <option value="case_studies">Case Studies Page</option>
+              <option value="research_insights">Research Insights Page</option>
+              <option value="contact">Contact Page</option>
+              <option value="resources">Resources Page</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Sections List */}
+        {loading ? (
+          <div className="bg-white p-12 rounded-xl shadow-sm border border-gray-100">
+            <div className="flex justify-center items-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <span className="ml-3 text-gray-600">Loading sections...</span>
+            </div>
+          </div>
+        ) : currentPageSections.length > 0 ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h4 className="text-lg font-medium text-gray-900">
+                {cmsPages[selectedPage]?.name} Sections
+              </h4>
+              <p className="text-sm text-gray-600">
+                Manage sections for this page
+              </p>
+            </div>
+
+            <div className="divide-y divide-gray-200">
+              {currentPageSections.map((section) => (
+                <div
+                  key={section.id}
+                  className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center space-x-4 flex-1">
+                    <div className="flex items-center">
+                      <ArrowsUpDownIcon className="h-5 w-5 text-gray-400 cursor-move" />
+                    </div>
+
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3">
+                        <h5 className="text-sm font-medium text-gray-900">
+                          {section.section_name}
+                        </h5>
+                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+                          {section.section_key}
+                        </span>
+                      </div>
+                      {section.content && Object.keys(section.content).length > 0 && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          {Object.keys(section.content).length} content field(s)
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    {/* Status Badge */}
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        section.enabled
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
+                      {section.enabled ? 'Enabled' : 'Disabled'}
+                    </span>
+
+                    {/* Toggle Button */}
+                    <button
+                      onClick={() => handleToggleSection(section)}
+                      className={`p-2 rounded-lg transition-colors ${
+                        section.enabled
+                          ? 'text-red-600 hover:bg-red-50'
+                          : 'text-green-600 hover:bg-green-50'
+                      }`}
+                      title={section.enabled ? 'Disable section' : 'Enable section'}
+                    >
+                      {section.enabled ? (
+                        <EyeSlashIcon className="h-5 w-5" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5" />
+                      )}
+                    </button>
+
+                    {/* Edit Button */}
+                    <button
+                      onClick={() => handleEditSection(section)}
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      title="Edit section content"
+                    >
+                      <PencilIcon className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white p-12 rounded-xl shadow-sm border border-gray-100 text-center">
+            <DocumentTextIcon className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+            <h4 className="text-sm font-medium text-gray-900 mb-2">
+              No sections found
+            </h4>
+            <p className="text-sm text-gray-500">
+              This page doesn't have any sections configured yet.
+            </p>
+          </div>
+        )}
+
+        {/* Enhanced Section Editor Modal */}
+        {showSectionEditor && editingSection && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+            >
+              {/* Header */}
+              <div className="px-6 py-4 border-b border-gray-200">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Edit Section: {editingSection.section_name}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setShowSectionEditor(false);
+                      setEditingSection(null);
+                      setEditorViewMode('form');
+                      setJsonError(null);
+                    }}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <XCircleIcon className="h-6 w-6" />
+                  </button>
+                </div>
+
+                {/* View Mode Toggle */}
+                <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setEditorViewMode('form')}
+                    className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                      editorViewMode === 'form'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    Form Editor
+                  </button>
+                  <button
+                    onClick={() => setEditorViewMode('json')}
+                    className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                      editorViewMode === 'json'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    JSON Editor
+                  </button>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-12rem)]">
+                <div className="space-y-4">
+                  {/* Basic Fields */}
+                  <div className="grid grid-cols-2 gap-4 pb-4 border-b border-gray-200">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Section Key
+                      </label>
+                      <input
+                        type="text"
+                        value={editingSection.section_key}
+                        disabled
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Section Name
+                      </label>
+                      <input
+                        type="text"
+                        value={editingSection.section_name}
+                        onChange={(e) =>
+                          setEditingSection({ ...editingSection, section_name: e.target.value })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={editingSection.enabled}
+                        onChange={(e) =>
+                          setEditingSection({ ...editingSection, enabled: e.target.checked })
+                        }
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Section Enabled</span>
+                    </label>
+                  </div>
+
+                  {/* Content Editor */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Section Content
+                      </label>
+                      {Object.keys(editingSection.content || {}).length > 0 && (
+                        <span className="text-xs text-gray-500">
+                          {Object.keys(editingSection.content).length} field(s)
+                        </span>
+                      )}
+                    </div>
+
+                    {editorViewMode === 'form' ? (
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        {Object.keys(editingSection.content || {}).length > 0 ? (
+                          <DynamicFormBuilder
+                            content={editingSection.content || {}}
+                            onChange={handleContentChange}
+                            onAddField={() => setShowFieldEditor(true)}
+                          />
+                        ) : (
+                          <div className="text-center py-8">
+                            <p className="text-sm text-gray-500 mb-4">No content fields yet</p>
+                            <button
+                              onClick={() => setShowFieldEditor(true)}
+                              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+                            >
+                              <PlusIcon className="h-4 w-4 mr-2" />
+                              Add First Field
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div>
+                        <textarea
+                          value={JSON.stringify(editingSection.content, null, 2)}
+                          onChange={(e) => handleJsonChange(e.target.value)}
+                          rows={16}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm ${
+                            jsonError ? 'border-red-300' : 'border-gray-300'
+                          }`}
+                          placeholder='{"title": "Section Title", "description": "Section description"}'
+                        />
+                        {jsonError ? (
+                          <p className="mt-2 text-sm text-red-600 flex items-center">
+                            <XCircleIcon className="h-4 w-4 mr-1" />
+                            {jsonError}
+                          </p>
+                        ) : (
+                          <p className="mt-2 text-xs text-gray-500">
+                            Enter valid JSON format for section content
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between bg-gray-50">
+                <div className="flex items-center space-x-4">
+                  {saveStatus && (
+                    <div
+                      className={`flex items-center text-sm ${
+                        saveStatus === 'saved' ? 'text-green-600' : saveStatus === 'error' ? 'text-red-600' : 'text-blue-600'
+                      }`}
+                    >
+                      {saveStatus === 'saved' && <CheckCircleIcon className="h-4 w-4 mr-1" />}
+                      {saveStatus === 'error' && <XCircleIcon className="h-4 w-4 mr-1" />}
+                      {saveStatus === 'saved' && 'Saved successfully'}
+                      {saveStatus === 'saving' && 'Saving...'}
+                      {saveStatus === 'error' && 'Error saving section'}
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => {
+                      setShowSectionEditor(false);
+                      setEditingSection(null);
+                      setEditorViewMode('form');
+                      setJsonError(null);
+                    }}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveSection}
+                    disabled={saveStatus === 'saving' || !!jsonError}
+                    className="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {saveStatus === 'saving' ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Field Editor Modal */}
+        {showFieldEditor && (
+          <FieldEditor
+            onAdd={handleAddField}
+            onClose={() => setShowFieldEditor(false)}
+          />
+        )}
+      </motion.div>
+    );
+  };
+
   const renderIntegrationsSettings = () => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -779,6 +1271,8 @@ export default function SettingsPage() {
     switch (activeTab) {
       case 'general':
         return renderGeneralSettings();
+      case 'cms':
+        return renderCMSSettings();
       case 'users':
         return renderUsersSettings();
       case 'email':

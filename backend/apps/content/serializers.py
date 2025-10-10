@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import BlogPost, CaseStudy, Service, MediaFile
+from .models import BlogPost, CaseStudy, Service, MediaFile, PageSection
 
 
 class BlogPostSerializer(serializers.ModelSerializer):
@@ -47,7 +47,7 @@ class MediaFileSerializer(serializers.ModelSerializer):
     uploaded_by_name = serializers.CharField(source='uploaded_by.username', read_only=True)
     url = serializers.CharField(read_only=True)
     thumbnail_url = serializers.CharField(read_only=True)
-    
+
     class Meta:
         model = MediaFile
         fields = [
@@ -57,3 +57,16 @@ class MediaFileSerializer(serializers.ModelSerializer):
             'url', 'thumbnail_url'
         ]
         read_only_fields = ['uploaded_at', 'usage_count', 'url', 'thumbnail_url']
+
+
+class PageSectionSerializer(serializers.ModelSerializer):
+    page_display_name = serializers.CharField(source='get_page_identifier_display', read_only=True)
+
+    class Meta:
+        model = PageSection
+        fields = [
+            'id', 'page_identifier', 'page_display_name', 'section_name',
+            'section_key', 'enabled', 'order', 'content',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['created_at', 'updated_at']

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BlogPost, CaseStudy, Service
+from .models import BlogPost, CaseStudy, Service, PageSection
 
 
 @admin.register(BlogPost)
@@ -26,3 +26,12 @@ class ServiceAdmin(admin.ModelAdmin):
     search_fields = ['name', 'description']
     prepopulated_fields = {'slug': ('name',)}
     ordering = ['order']
+
+
+@admin.register(PageSection)
+class PageSectionAdmin(admin.ModelAdmin):
+    list_display = ['section_name', 'page_identifier', 'section_key', 'enabled', 'order']
+    list_filter = ['page_identifier', 'enabled']
+    search_fields = ['section_name', 'section_key']
+    ordering = ['page_identifier', 'order']
+    list_editable = ['enabled', 'order']

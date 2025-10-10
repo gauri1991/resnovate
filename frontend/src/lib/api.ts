@@ -275,4 +275,30 @@ export const marketingAPI = {
   deleteWorkflowAction: (id: number) => api.delete(`/marketing/workflow-actions/${id}/`),
 };
 
+export const cmsAPI = {
+  // Get all pages with their sections
+  getPages: () => api.get('/cms/page-sections/by_page/'),
+
+  // Get sections for a specific page
+  getSections: async (page: string) => {
+    const response = await api.get('/cms/page-sections/by_page/');
+    return { data: response.data[page]?.sections || [] };
+  },
+
+  // Get a specific section
+  getSection: (id: number) => api.get(`/cms/page-sections/${id}/`),
+
+  // Create a new section
+  createSection: (data: any) => api.post('/cms/page-sections/', data),
+
+  // Update a section
+  updateSection: (id: number, data: any) => api.patch(`/cms/page-sections/${id}/`, data),
+
+  // Delete a section
+  deleteSection: (id: number) => api.delete(`/cms/page-sections/${id}/`),
+
+  // Reorder sections
+  reorderSections: (sections: any[]) => api.post('/cms/page-sections/reorder/', { sections }),
+};
+
 export default api;

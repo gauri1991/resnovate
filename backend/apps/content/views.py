@@ -1,10 +1,10 @@
 from rest_framework import viewsets, filters, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny, IsAuthenticated
 from django.db.models import Count
-from .models import BlogPost, CaseStudy, Service, MediaFile
-from .serializers import BlogPostSerializer, CaseStudySerializer, ServiceSerializer, MediaFileSerializer
+from .models import BlogPost, CaseStudy, Service, MediaFile, PageSection
+from .serializers import BlogPostSerializer, CaseStudySerializer, ServiceSerializer, MediaFileSerializer, PageSectionSerializer
 
 
 class BlogPostViewSet(viewsets.ModelViewSet):
@@ -71,6 +71,58 @@ class MediaFileViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(uploaded_by=self.request.user)
+
+
+class PageSectionViewSet(viewsets.ModelViewSet):
+    queryset = PageSection.objects.all()
+    serializer_class = PageSectionSerializer
+    permission_classes = [AllowAny]  # Allow CMS edits for development
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['page_identifier', 'order']
+    ordering = ['page_identifier', 'order']
+
+    def get_queryset(self):
+        queryset = PageSection.objects.all()
+
+        # Filter by page identifier
+        page = self.request.query_params.get('page', None)
+        if page:
+            queryset = queryset.filter(page_identifier=page)
+
+        return queryset
+
+    @action(detail=False, methods=['GET'], permission_classes=[AllowAny])
+    def by_page(self, request):
+        """Get all sections for a specific page grouped by page"""
+        pages = PageSection.PAGE_CHOICES
+        result = {}
+
+        for page_key, page_name in pages:
+            sections = PageSection.objects.filter(page_identifier=page_key).order_by('order')
+            result[page_key] = {
+                'name': page_name,
+                'sections': PageSectionSerializer(sections, many=True).data
+            }
+
+        return Response(result)
+
+    @action(detail=False, methods=['POST'], permission_classes=[IsAuthenticated])
+    def reorder(self, request):
+        """Reorder sections"""
+        section_orders = request.data.get('sections', [])
+
+        for item in section_orders:
+            section_id = item.get('id')
+            new_order = item.get('order')
+
+            try:
+                section = PageSection.objects.get(id=section_id)
+                section.order = new_order
+                section.save()
+            except PageSection.DoesNotExist:
+                pass
+
+        return Response({'status': 'success', 'message': 'Sections reordered successfully'})
 
 
 @api_view(['GET'])

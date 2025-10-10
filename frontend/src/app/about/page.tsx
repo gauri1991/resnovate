@@ -8,6 +8,7 @@ import {
   GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 import LeadCaptureForm from '../../components/LeadCaptureForm';
+import { useCMSContent } from '@/hooks/useCMSContent';
 
 const values = [
   {
@@ -59,35 +60,9 @@ const team = [
   },
 ];
 
-const milestones = [
-  {
-    year: '2020',
-    title: 'Company Founded',
-    description: 'Resnovate.ai was established with a vision to revolutionize business through artificial intelligence.',
-  },
-  {
-    year: '2021',
-    title: 'First AI Platform Launch',
-    description: 'Launched our proprietary market analysis platform, serving 50+ business professionals.',
-  },
-  {
-    year: '2022',
-    title: 'Series A Funding',
-    description: 'Secured $5M in Series A funding to expand our technology and team.',
-  },
-  {
-    year: '2023',
-    title: 'International Expansion',
-    description: 'Expanded operations to serve clients across North America and Europe.',
-  },
-  {
-    year: '2024',
-    title: 'Industry Recognition',
-    description: 'Named "AI Consulting Firm of the Year" by Technology Innovation Awards.',
-  },
-];
-
 export default function About() {
+  const { sections, loading } = useCMSContent('about');
+
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -100,11 +75,10 @@ export default function About() {
             className="mx-auto max-w-2xl text-center"
           >
             <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-              About <span className="text-gradient">Resnovate.ai</span>
+              {sections.hero?.title || 'About'} <span className="text-gradient">{sections.hero?.title ? '' : 'Resnovate'}</span>
             </h1>
             <p className="mt-6 text-lg leading-8 text-slate-600">
-              We're on a mission to transform businesses across industries through artificial intelligence, 
-              machine learning, and innovative solutions that drive measurable results.
+              {sections.hero?.description || "We're on a mission to transform businesses across industries through artificial intelligence, machine learning, and innovative solutions that drive measurable results."}
             </p>
           </motion.div>
         </div>
@@ -116,19 +90,16 @@ export default function About() {
           <div className="mx-auto max-w-2xl lg:text-center">
             <h2 className="text-base font-semibold leading-7 text-blue-900">Our Mission</h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              Empowering Business Excellence Through AI
+              {sections.overview?.title || 'Empowering Business Excellence Through AI'}
             </p>
             <p className="mt-6 text-lg leading-8 text-slate-600">
-              At Resnovate.ai, we believe that artificial intelligence should not replace human expertise, 
-              but amplify it. Our mission is to provide businesses with the most advanced 
-              AI-powered tools and insights, enabling them to make better decisions, reduce risks, and 
-              maximize returns while driving digital transformation and innovation.
+              {sections.overview?.mission || "At Resnovate, we believe that artificial intelligence should not replace human expertise, but amplify it. Our mission is to provide businesses with the most advanced AI-powered tools and insights, enabling them to make better decisions, reduce risks, and maximize returns while driving digital transformation and innovation."}
             </p>
           </div>
 
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
             <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
-              {values.map((value) => (
+              {(sections.values?.values || values).map((value: any, index: number) => (
                 <motion.div
                   key={value.name}
                   initial={{ opacity: 0, y: 20 }}
@@ -137,7 +108,7 @@ export default function About() {
                   className="flex flex-col"
                 >
                   <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-slate-900">
-                    <value.icon className="h-5 w-5 flex-none text-blue-900" aria-hidden="true" />
+                    {value.icon ? <value.icon className="h-5 w-5 flex-none text-blue-900" aria-hidden="true" /> : <LightBulbIcon className="h-5 w-5 flex-none text-blue-900" />}
                     {value.name}
                   </dt>
                   <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
@@ -154,19 +125,18 @@ export default function About() {
       <section className="bg-slate-50 py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-900">Our Journey</h2>
+            <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.milestones?.subtitle || 'Our Journey'}</h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              Building the Future of Business Through AI
+              {sections.milestones?.title || 'Building the Future of Business Through AI'}
             </p>
             <p className="mt-6 text-lg leading-8 text-slate-600">
-              From a vision to revolutionize business through AI to becoming a trusted partner 
-              for hundreds of enterprises and organizations worldwide.
+              {sections.milestones?.description || 'From a vision to revolutionize business through AI to becoming a trusted partner for hundreds of enterprises and organizations worldwide.'}
             </p>
           </div>
 
           <div className="mx-auto mt-16 max-w-4xl">
             <div className="space-y-8">
-              {milestones.map((milestone, index) => (
+              {sections.milestones?.milestones?.map((milestone, index) => (
                 <motion.div
                   key={milestone.year}
                   initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
@@ -196,16 +166,15 @@ export default function About() {
           <div className="mx-auto max-w-2xl lg:text-center">
             <h2 className="text-base font-semibold leading-7 text-blue-900">Our Team</h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              Meet the Experts Behind the Innovation
+              {sections.team?.title || 'Meet the Experts Behind the Innovation'}
             </p>
             <p className="mt-6 text-lg leading-8 text-slate-600">
-              Our diverse team combines decades of business expertise with cutting-edge 
-              AI research and development experience.
+              {sections.team?.description || 'Our diverse team combines decades of business expertise with cutting-edge AI research and development experience.'}
             </p>
           </div>
 
           <div className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-4">
-            {team.map((person, index) => (
+            {(sections.team?.team_members || team).map((person: any, index: number) => (
               <motion.div
                 key={person.name}
                 initial={{ opacity: 0, y: 20 }}
@@ -228,62 +197,29 @@ export default function About() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Our Impact by the Numbers
+              {sections.stats?.title || 'Our Impact by the Numbers'}
             </h2>
             <p className="mt-6 text-lg leading-8 text-blue-100">
-              Measurable results that demonstrate our commitment to client success and industry innovation.
+              {sections.stats?.description || 'Measurable results that demonstrate our commitment to client success and industry innovation.'}
             </p>
           </div>
-          
+
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
             <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-4">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="mx-auto flex max-w-xs flex-col gap-y-4"
-              >
-                <dt className="text-base leading-7 text-blue-100">Clients Served</dt>
-                <dd className="order-first text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-                  500+
-                </dd>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="mx-auto flex max-w-xs flex-col gap-y-4"
-              >
-                <dt className="text-base leading-7 text-blue-100">AI Models Deployed</dt>
-                <dd className="order-first text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-                  25+
-                </dd>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="mx-auto flex max-w-xs flex-col gap-y-4"
-              >
-                <dt className="text-base leading-7 text-blue-100">Countries Served</dt>
-                <dd className="order-first text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-                  12
-                </dd>
-              </motion.div>
-              
-              <motion.div
-                initial={{ opacity: 0, scale: 0.5 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="mx-auto flex max-w-xs flex-col gap-y-4"
-              >
-                <dt className="text-base leading-7 text-blue-100">Awards Won</dt>
-                <dd className="order-first text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-                  8
-                </dd>
-              </motion.div>
+              {sections.stats?.stats?.map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="mx-auto flex max-w-xs flex-col gap-y-4"
+                >
+                  <dt className="text-base leading-7 text-blue-100">{stat.label}</dt>
+                  <dd className="order-first text-3xl font-semibold tracking-tight text-white sm:text-5xl">
+                    {stat.value}
+                  </dd>
+                </motion.div>
+              ))}
             </dl>
           </div>
         </div>
