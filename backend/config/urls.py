@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -13,6 +15,36 @@ from apps.content.views import BlogPostViewSet, CaseStudyViewSet, ServiceViewSet
 from apps.leads.views import LeadViewSet, NewsletterSubscriberViewSet
 from apps.consultations.views import ConsultationSlotViewSet, BookingViewSet
 from apps.users.views import current_user
+
+@require_http_methods(["GET"])
+def health_check(request):
+    """Simple health check endpoint"""
+    from django.db import connection
+    from apps.content.models import PageSection
+
+    status = {
+        "status": "healthy",
+        "django": "ok"
+    }
+
+    # Check database
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        status["database"] = "connected"
+    except Exception as e:
+        status["database"] = f"error: {str(e)}"
+        status["status"] = "unhealthy"
+
+    # Check PageSection table
+    try:
+        count = PageSection.objects.count()
+        status["pagesections"] = count
+    except Exception as e:
+        status["pagesections"] = f"error: {str(e)}"
+        status["status"] = "unhealthy"
+
+    return JsonResponse(status)
 
 # Create API router
 router = DefaultRouter()
@@ -28,6 +60,7 @@ router.register(r'bookings', BookingViewSet, basename='booking')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/health/', health_check, name='health_check'),
     path('api/', include(router.urls)),
     path('api/marketing/', include('apps.marketing.urls')),
     path('api/auth/', include('rest_framework.urls')),
