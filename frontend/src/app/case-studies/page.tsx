@@ -75,62 +75,70 @@ export default function CaseStudies() {
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-secondary py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mx-auto max-w-2xl text-center"
-          >
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-              {sections.header?.title || 'Success Stories'}
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {sections.header?.description || 'Discover how our AI-powered solutions have transformed real estate businesses across industries, delivering measurable results and competitive advantages.'}
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      {sections.header && (
+        <section className="relative bg-gradient-secondary py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="mx-auto max-w-2xl text-center"
+            >
+              <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
+                {sections.header.title}
+              </h1>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {sections.header.description}
+              </p>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Metrics Section */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.metrics?.subtitle || 'Proven Results'}</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {sections.metrics?.title || 'Real Impact, Measurable Success'}
-            </p>
-          </div>
+      {(sections.metrics || sections.metrics_data) && (
+        <section className="py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            {sections.metrics && (
+              <div className="mx-auto max-w-2xl lg:text-center">
+                <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.metrics.subtitle}</h2>
+                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                  {sections.metrics.title}
+                </p>
+              </div>
+            )}
 
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-3 lg:gap-y-16">
-              {sections.metrics_data?.metrics?.map((metric, index) => {
-                const IconComponent = iconMapping[metric.label] || ChartBarIcon;
-                return (
-                  <motion.div
-                    key={metric.label}
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="relative pl-16 text-center lg:text-left"
-                  >
-                    <dt className="text-base font-semibold leading-7 text-slate-900">
-                      <div className="absolute left-1/2 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-900 lg:left-0 transform -translate-x-1/2 lg:transform-none">
-                        <IconComponent className="h-6 w-6 text-white" aria-hidden="true" />
-                      </div>
-                      {metric.label}
-                    </dt>
-                    <dd className="mt-2 text-3xl font-bold text-blue-900 sm:text-4xl">
-                      {metric.value}
-                    </dd>
-                  </motion.div>
-                );
-              })}
-            </dl>
+            {sections.metrics_data && sections.metrics_data.metrics && sections.metrics_data.metrics.length > 0 && (
+              <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+                <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-3 lg:gap-y-16">
+                  {sections.metrics_data.metrics.map((metric, index) => {
+                    const IconComponent = iconMapping[metric.label] || ChartBarIcon;
+                    return (
+                      <motion.div
+                        key={metric.label}
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        className="relative pl-16 text-center lg:text-left"
+                      >
+                        <dt className="text-base font-semibold leading-7 text-slate-900">
+                          <div className="absolute left-1/2 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-900 lg:left-0 transform -translate-x-1/2 lg:transform-none">
+                            <IconComponent className="h-6 w-6 text-white" aria-hidden="true" />
+                          </div>
+                          {metric.label}
+                        </dt>
+                        <dd className="mt-2 text-3xl font-bold text-blue-900 sm:text-4xl">
+                          {metric.value}
+                        </dd>
+                      </motion.div>
+                    );
+                  })}
+                </dl>
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Industry Filter */}
       <section className="bg-slate-50 py-8">
@@ -244,28 +252,30 @@ export default function CaseStudies() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-blue-900 py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              {sections.cta?.title || 'Ready to Create Your Own Success Story?'}
-            </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-blue-100">
-              {sections.cta?.description || 'Join our growing list of successful clients and discover how AI can transform your real estate business.'}
-            </p>
+      {sections.cta && (
+        <section className="bg-blue-900 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                {sections.cta.title}
+              </h2>
+              <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-blue-100">
+                {sections.cta.description}
+              </p>
+            </div>
+
+            <div className="mx-auto mt-16 max-w-2xl">
+              <LeadCaptureForm
+                title="Start Your Transformation"
+                description="Get a free consultation and discover how we can help you achieve similar results."
+                submitText="Get Started Today"
+                source="case_studies"
+                className="bg-white"
+              />
+            </div>
           </div>
-          
-          <div className="mx-auto mt-16 max-w-2xl">
-            <LeadCaptureForm
-              title="Start Your Transformation"
-              description="Get a free consultation and discover how we can help you achieve similar results."
-              submitText="Get Started Today"
-              source="case_studies"
-              className="bg-white"
-            />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }

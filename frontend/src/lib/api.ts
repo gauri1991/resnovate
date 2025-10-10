@@ -63,7 +63,12 @@ export const leadsAPI = {
 
 export const consultationAPI = {
   getAvailableSlots: () => api.get('/consultation-slots/available/'),
+  getSlotsByDate: (date: string) => api.get(`/consultation-slots/by_date/?date=${date}`),
   createBooking: (data: any) => api.post('/bookings/', data),
+  createPaymentIntent: (bookingId: number, amount: number) =>
+    api.post('/bookings/create_payment_intent/', { booking_id: bookingId, amount }),
+  confirmPayment: (paymentIntentId: string) =>
+    api.post('/bookings/confirm_payment/', { payment_intent_id: paymentIntentId }),
 };
 
 export const adminAPI = {

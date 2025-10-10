@@ -4,16 +4,39 @@ from django.contrib.auth.models import User
 
 
 class ConsultationSlot(models.Model):
+    COMMUNICATION_CHOICES = [
+        ('zoom', 'Zoom'),
+        ('teams', 'Microsoft Teams'),
+        ('direct_call', 'Direct Call'),
+        ('google_meet', 'Google Meet'),
+    ]
+
     date_time = models.DateTimeField()
     duration_minutes = models.IntegerField(default=60)
     is_available = models.BooleanField(default=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     meeting_type = models.CharField(max_length=50, default='video_call')
-    
+    communication_method = models.CharField(
+        max_length=20,
+        choices=COMMUNICATION_CHOICES,
+        default='zoom',
+        help_text='Preferred communication method for this slot'
+    )
+    requires_payment = models.BooleanField(
+        default=True,
+        help_text='Whether this slot requires upfront payment'
+    )
+    payment_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=10.00,
+        help_text='Booking fee amount (refundable/adjustable)'
+    )
+
     class Meta:
         ordering = ['date_time']
         unique_together = ['date_time', 'duration_minutes']
-    
+
     def __str__(self):
         return f"{self.date_time.strftime('%Y-%m-%d %H:%M')} - {self.duration_minutes} min"
 
@@ -26,11 +49,24 @@ class Booking(models.Model):
         ('completed', 'Completed'),
         ('no_show', 'No Show'),
     ]
-    
+
+    COMMUNICATION_CHOICES = [
+        ('zoom', 'Zoom'),
+        ('teams', 'Microsoft Teams'),
+        ('direct_call', 'Direct Call'),
+        ('google_meet', 'Google Meet'),
+    ]
+
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='bookings')
     slot = models.OneToOneField(ConsultationSlot, on_delete=models.CASCADE, related_name='booking')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     paid = models.BooleanField(default=False)
+    communication_method = models.CharField(
+        max_length=20,
+        choices=COMMUNICATION_CHOICES,
+        default='zoom',
+        help_text='Selected communication method for this booking'
+    )
     
     # Revenue Tracking
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)

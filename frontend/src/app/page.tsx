@@ -166,148 +166,157 @@ export default function Home() {
   return (
     <div className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative bg-gradient-primary">
-        <div className="absolute inset-0 bg-black opacity-10"></div>
-        <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-              {heroSection?.title || 'Transform Your Business with Innovation'}
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-white/90">
-              {heroSection?.subtitle || 'Unlock the power of artificial intelligence to revolutionize your operations, strategic planning, and digital transformation initiatives.'}
-            </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Link
-                href={heroSection?.cta_link || '/contact'}
-                className="btn-secondary rounded-md px-6 py-3 text-base font-semibold shadow-sm hover:bg-amber-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
-              >
-                {heroSection?.cta_text || 'Get Started Today'}
-              </Link>
-              <Link
-                href="/case-studies"
-                className="flex items-center text-base font-semibold leading-6 text-white hover:text-amber-200 transition-colors duration-200"
-              >
-                View Case Studies <ArrowRightIcon className="ml-2 h-4 w-4" />
-              </Link>
-            </div>
-          </motion.div>
-        </div>
+      {heroSection && (
+        <section className="relative bg-gradient-primary">
+          <div className="absolute inset-0 bg-black opacity-10"></div>
+          <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center"
+            >
+              <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+                {heroSection.title}
+              </h1>
+              <p className="mt-6 text-lg leading-8 text-white/90">
+                {heroSection.subtitle}
+              </p>
+              <div className="mt-10 flex items-center justify-center gap-x-6">
+                <Link
+                  href={heroSection.cta_link || '/contact'}
+                  className="btn-secondary rounded-md px-6 py-3 text-base font-semibold shadow-sm hover:bg-amber-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
+                >
+                  {heroSection.cta_text}
+                </Link>
+                <Link
+                  href="/case-studies"
+                  className="flex items-center text-base font-semibold leading-6 text-white hover:text-amber-200 transition-colors duration-200"
+                >
+                  View Case Studies <ArrowRightIcon className="ml-2 h-4 w-4" />
+                </Link>
+              </div>
+            </motion.div>
+          </div>
 
-        {/* Floating elements for visual appeal */}
-        <div className="absolute top-20 left-10 opacity-20">
-          <div className="h-16 w-16 rounded-full bg-white animate-pulse"></div>
-        </div>
-        <div className="absolute top-40 right-16 opacity-15">
-          <div className="h-12 w-12 rounded-full bg-amber-300 animate-bounce"></div>
-        </div>
-      </section>
+          {/* Floating elements for visual appeal */}
+          <div className="absolute top-20 left-10 opacity-20">
+            <div className="h-16 w-16 rounded-full bg-white animate-pulse"></div>
+          </div>
+          <div className="absolute top-40 right-16 opacity-15">
+            <div className="h-12 w-12 rounded-full bg-amber-300 animate-bounce"></div>
+          </div>
+        </section>
+      )}
 
       {/* Stats Section */}
-      <section className="bg-white py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-4">
-            {statsSection?.stats?.map((stat, index) => (
-              <motion.div
-                key={stat.id || index}
-                initial={{ opacity: 0, scale: 0.5 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="mx-auto flex max-w-xs flex-col gap-y-4"
-              >
-                <dt className="text-base leading-7 text-slate-600">{stat.name}</dt>
-                <dd className="order-first text-3xl font-semibold tracking-tight text-blue-900 sm:text-5xl">
-                  {stat.value}
-                </dd>
-              </motion.div>
-            ))}
-          </dl>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="bg-slate-50 py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-900">{featuresSection?.subtitle || 'Everything you need'}</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {featuresSection?.title || 'Revolutionize Your Business Operations'}
-            </p>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {featuresSection?.description || 'Our comprehensive suite of AI-powered tools and expert consulting services help you make smarter decisions, reduce costs, and maximize returns on every business investment.'}
-            </p>
-          </div>
-
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-              {featuresSection?.features?.map((feature) => {
-                const IconComponent = iconMapping[feature.name] || ChartBarIcon;
-                return (
-                  <motion.div
-                    key={feature.name}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="relative pl-16"
-                  >
-                    <dt className="text-base font-semibold leading-7 text-slate-900">
-                      <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-900">
-                        <IconComponent className="h-6 w-6 text-white" aria-hidden="true" />
-                      </div>
-                      {feature.name}
-                    </dt>
-                    <dd className="mt-2 text-base leading-7 text-slate-600">{feature.description}</dd>
-                  </motion.div>
-                );
-              })}
-            </dl>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="bg-white py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-xl text-center">
-            <h2 className="text-lg font-semibold leading-8 tracking-tight text-blue-900">Testimonials</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {testimonialsSection?.title || 'Trusted by Industry Leaders'}
-            </p>
-          </div>
-
-          <div className="mx-auto mt-16 flow-root max-w-2xl sm:mt-20 lg:mx-0 lg:max-w-none">
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {(testimonialsSection?.testimonials && testimonialsSection.testimonials.length > 0
-                ? testimonialsSection.testimonials
-                : testimonials
-              ).map((testimonial: any) => (
+      {statsSection && statsSection.stats && statsSection.stats.length > 0 && (
+        <section className="bg-white py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-4">
+              {statsSection.stats.map((stat, index) => (
                 <motion.div
-                  key={testimonial.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  key={stat.id || index}
+                  initial={{ opacity: 0, scale: 0.5 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5 }}
-                  className="flex flex-col justify-between rounded-2xl bg-slate-50 p-8 shadow-lg"
+                  className="mx-auto flex max-w-xs flex-col gap-y-4"
                 >
-                  <blockquote className="text-base leading-7 text-slate-700">
-                    <p>"{testimonial.body || testimonial.quote || testimonial.text}"</p>
-                  </blockquote>
-                  <figcaption className="mt-6 flex items-center gap-x-4">
-                    <div className="h-10 w-10 rounded-full bg-slate-300"></div>
-                    <div>
-                      <div className="font-semibold text-slate-900">{testimonial.author?.name || testimonial.name}</div>
-                      <div className="text-sm leading-6 text-slate-600">{testimonial.author?.handle ? `@${testimonial.author.handle}` : (testimonial.title || testimonial.company)}</div>
-                    </div>
-                  </figcaption>
+                  <dt className="text-base leading-7 text-slate-600">{stat.name}</dt>
+                  <dd className="order-first text-3xl font-semibold tracking-tight text-blue-900 sm:text-5xl">
+                    {stat.value}
+                  </dd>
                 </motion.div>
               ))}
-            </div>
+            </dl>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Features Section */}
+      {featuresSection && (
+        <section className="bg-slate-50 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-base font-semibold leading-7 text-blue-900">{featuresSection.subtitle}</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {featuresSection.title}
+              </p>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {featuresSection.description}
+              </p>
+            </div>
+
+            {featuresSection.features && featuresSection.features.length > 0 && (
+              <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+                <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+                  {featuresSection.features.map((feature) => {
+                    const IconComponent = iconMapping[feature.name] || ChartBarIcon;
+                    return (
+                      <motion.div
+                        key={feature.name}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="relative pl-16"
+                      >
+                        <dt className="text-base font-semibold leading-7 text-slate-900">
+                          <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-900">
+                            <IconComponent className="h-6 w-6 text-white" aria-hidden="true" />
+                          </div>
+                          {feature.name}
+                        </dt>
+                        <dd className="mt-2 text-base leading-7 text-slate-600">{feature.description}</dd>
+                      </motion.div>
+                    );
+                  })}
+                </dl>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Testimonials Section */}
+      {testimonialsSection && (
+        <section className="bg-white py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-xl text-center">
+              <h2 className="text-lg font-semibold leading-8 tracking-tight text-blue-900">Testimonials</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {testimonialsSection.title}
+              </p>
+            </div>
+
+            {(testimonialsSection.testimonials && testimonialsSection.testimonials.length > 0) && (
+              <div className="mx-auto mt-16 flow-root max-w-2xl sm:mt-20 lg:mx-0 lg:max-w-none">
+                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                  {testimonialsSection.testimonials.map((testimonial: any) => (
+                    <motion.div
+                      key={testimonial.id}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5 }}
+                      className="flex flex-col justify-between rounded-2xl bg-slate-50 p-8 shadow-lg"
+                    >
+                      <blockquote className="text-base leading-7 text-slate-700">
+                        <p>"{testimonial.body || testimonial.quote || testimonial.text}"</p>
+                      </blockquote>
+                      <figcaption className="mt-6 flex items-center gap-x-4">
+                        <div className="h-10 w-10 rounded-full bg-slate-300"></div>
+                        <div>
+                          <div className="font-semibold text-slate-900">{testimonial.author?.name || testimonial.name}</div>
+                          <div className="text-sm leading-6 text-slate-600">{testimonial.author?.handle ? `@${testimonial.author.handle}` : (testimonial.title || testimonial.company)}</div>
+                        </div>
+                      </figcaption>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Recent Content Section */}
       <section className="bg-slate-50 py-24 sm:py-32">
@@ -488,52 +497,54 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-blue-900 py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              {ctaSection?.title || 'Ready to Transform Your Business?'}
-            </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-blue-100">
-              {ctaSection?.description || 'Join hundreds of business leaders who have revolutionized their operations with our AI-powered solutions.'}
-            </p>
-          </div>
-          
-          <div className="mx-auto mt-16 max-w-2xl lg:max-w-4xl">
-            <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
-              {/* Lead Capture Form */}
-              <div>
-                <LeadCaptureForm
-                  title="Start Your Transformation"
-                  description="Get a free consultation and discover how AI can revolutionize your business operations."
-                  submitText="Get Free Consultation"
-                  source="homepage_cta"
-                  className="bg-white"
-                />
-              </div>
-              
-              {/* Newsletter Signup */}
-              <div className="flex flex-col justify-center">
-                <div className="rounded-lg bg-blue-800 p-8">
-                  <h3 className="text-xl font-bold text-white mb-4">
-                    Stay Ahead of the Curve
-                  </h3>
-                  <p className="text-blue-100 mb-6">
-                    Get weekly insights on AI innovation, business transformation trends, and technology applications delivered to your inbox.
-                  </p>
-                  <NewsletterForm
-                    title=""
-                    description=""
-                    buttonText="Subscribe"
-                    className="text-white"
-                    inline={true}
+      {ctaSection && (
+        <section className="bg-blue-900 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                {ctaSection.title}
+              </h2>
+              <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-blue-100">
+                {ctaSection.description}
+              </p>
+            </div>
+
+            <div className="mx-auto mt-16 max-w-2xl lg:max-w-4xl">
+              <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+                {/* Lead Capture Form */}
+                <div>
+                  <LeadCaptureForm
+                    title="Start Your Transformation"
+                    description="Get a free consultation and discover how AI can revolutionize your business operations."
+                    submitText="Get Free Consultation"
+                    source="homepage_cta"
+                    className="bg-white"
                   />
+                </div>
+
+                {/* Newsletter Signup */}
+                <div className="flex flex-col justify-center">
+                  <div className="rounded-lg bg-blue-800 p-8">
+                    <h3 className="text-xl font-bold text-white mb-4">
+                      Stay Ahead of the Curve
+                    </h3>
+                    <p className="text-blue-100 mb-6">
+                      Get weekly insights on AI innovation, business transformation trends, and technology applications delivered to your inbox.
+                    </p>
+                    <NewsletterForm
+                      title=""
+                      description=""
+                      buttonText="Subscribe"
+                      className="text-white"
+                      inline={true}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }

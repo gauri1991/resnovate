@@ -27,180 +27,201 @@ export default function Resources() {
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-secondary py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mx-auto max-w-2xl text-center"
-          >
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-              {sections.header?.title || 'Resources & Tools'}
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {sections.header?.description || 'Access our comprehensive library of industry reports, tools, and educational content to accelerate your AI transformation journey and drive business innovation.'}
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      {sections.header && (
+        <section className="relative bg-gradient-secondary py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="mx-auto max-w-2xl text-center"
+            >
+              <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
+                {sections.header.title}
+              </h1>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {sections.header.description}
+              </p>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Resource Categories */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.library?.subtitle || 'Resource Library'}</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {sections.library?.title || 'Everything You Need to Succeed'}
-            </p>
-          </div>
+      {(sections.library || sections.resource_categories_data) && (
+        <section className="py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            {sections.library && (
+              <div className="mx-auto max-w-2xl text-center">
+                <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.library.subtitle}</h2>
+                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                  {sections.library.title}
+                </p>
+              </div>
+            )}
 
-          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:gap-8">
-            {sections.resource_categories_data?.categories?.map((category, index) => {
-              const IconComponent = iconMapping[category.name] || ChartBarIcon;
-              return (
-                <motion.div
-                  key={category.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="flex flex-col justify-between rounded-2xl bg-white p-8 shadow-lg ring-1 ring-slate-200 hover:shadow-xl transition-shadow duration-300"
-                >
-                  <div>
-                    <div className="mb-6">
-                      <IconComponent className={`h-8 w-8 text-${category.color}-600`} aria-hidden="true" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-slate-900">{category.name}</h3>
-                    <p className="mt-4 text-sm text-slate-600">{category.description}</p>
-                  </div>
-
-                  <div className="mt-8 flex items-center justify-between">
-                    <span className="text-sm text-slate-500">{category.count} resources</span>
-                    <Link
-                      href="#featured-resources"
-                      className="inline-flex items-center text-sm font-semibold text-blue-900 hover:text-blue-800"
+            {sections.resource_categories_data && sections.resource_categories_data.categories && sections.resource_categories_data.categories.length > 0 && (
+              <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:gap-8">
+                {sections.resource_categories_data.categories.map((category, index) => {
+                  const IconComponent = iconMapping[category.name] || ChartBarIcon;
+                  return (
+                    <motion.div
+                      key={category.name}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="flex flex-col justify-between rounded-2xl bg-white p-8 shadow-lg ring-1 ring-slate-200 hover:shadow-xl transition-shadow duration-300"
                     >
-                      Browse <span className="ml-1">→</span>
-                    </Link>
-                  </div>
-                </motion.div>
-              );
-            })}
+                      <div>
+                        <div className="mb-6">
+                          <IconComponent className={`h-8 w-8 text-${category.color}-600`} aria-hidden="true" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-slate-900">{category.name}</h3>
+                        <p className="mt-4 text-sm text-slate-600">{category.description}</p>
+                      </div>
+
+                      <div className="mt-8 flex items-center justify-between">
+                        <span className="text-sm text-slate-500">{category.count} resources</span>
+                        <Link
+                          href="#featured-resources"
+                          className="inline-flex items-center text-sm font-semibold text-blue-900 hover:text-blue-800"
+                        >
+                          Browse <span className="ml-1">→</span>
+                        </Link>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Featured Resources */}
-      <section id="featured-resources" className="bg-slate-50 py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {sections.featured?.title || 'Featured Resources'}
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {sections.featured?.description || 'Our most popular and valuable resources to help you make informed decisions'}
-            </p>
-          </div>
+      {(sections.featured || sections.featured_resources_data) && (
+        <section id="featured-resources" className="bg-slate-50 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            {sections.featured && (
+              <div className="mx-auto max-w-2xl text-center">
+                <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                  {sections.featured.title}
+                </h2>
+                <p className="mt-6 text-lg leading-8 text-slate-600">
+                  {sections.featured.description}
+                </p>
+              </div>
+            )}
 
-          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2">
-            {sections.featured_resources_data?.resources?.map((resource, index) => (
-              <motion.article
-                key={resource.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="flex flex-col items-start justify-between rounded-2xl bg-white p-8 shadow-lg"
-              >
-                <div className="flex items-center gap-x-4 text-xs">
-                  <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
-                    {resource.type}
-                  </span>
-                </div>
-
-                <div className="group relative">
-                  <h3 className="mt-3 text-lg font-semibold leading-6 text-slate-900 group-hover:text-slate-600">
-                    {resource.title}
-                  </h3>
-                  <p className="mt-5 line-clamp-3 text-sm leading-6 text-slate-600">
-                    {resource.description}
-                  </p>
-                </div>
-
-                <div className="mt-6 flex items-center gap-x-4">
-                  <a
-                    href={resource.downloadUrl}
-                    className="inline-flex items-center rounded-md bg-blue-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900"
+            {sections.featured_resources_data && sections.featured_resources_data.resources && sections.featured_resources_data.resources.length > 0 && (
+              <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2">
+                {sections.featured_resources_data.resources.map((resource, index) => (
+                  <motion.article
+                    key={resource.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="flex flex-col items-start justify-between rounded-2xl bg-white p-8 shadow-lg"
                   >
-                    <ArrowDownTrayIcon className="mr-2 h-4 w-4" />
-                    Download
-                  </a>
-                </div>
-              </motion.article>
-            ))}
+                    <div className="flex items-center gap-x-4 text-xs">
+                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                        {resource.type}
+                      </span>
+                    </div>
+
+                    <div className="group relative">
+                      <h3 className="mt-3 text-lg font-semibold leading-6 text-slate-900 group-hover:text-slate-600">
+                        {resource.title}
+                      </h3>
+                      <p className="mt-5 line-clamp-3 text-sm leading-6 text-slate-600">
+                        {resource.description}
+                      </p>
+                    </div>
+
+                    <div className="mt-6 flex items-center gap-x-4">
+                      <a
+                        href={resource.downloadUrl}
+                        className="inline-flex items-center rounded-md bg-blue-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900"
+                      >
+                        <ArrowDownTrayIcon className="mr-2 h-4 w-4" />
+                        Download
+                      </a>
+                    </div>
+                  </motion.article>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Tools & Calculators */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {sections.tools?.title || 'Tools & Calculators'}
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {sections.tools?.description || 'Free tools and templates to help you assess AI readiness and make informed technology decisions'}
-            </p>
-          </div>
+      {(sections.tools || sections.tools_data) && (
+        <section className="py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            {sections.tools && (
+              <div className="mx-auto max-w-2xl text-center">
+                <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                  {sections.tools.title}
+                </h2>
+                <p className="mt-6 text-lg leading-8 text-slate-600">
+                  {sections.tools.description}
+                </p>
+              </div>
+            )}
 
-          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:gap-8">
-            {sections.tools_data?.tools?.map((tool, index) => (
-              <motion.div
-                key={tool.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-300"
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
-                    <DocumentTextIcon className="h-6 w-6 text-slate-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-slate-900">{tool.name}</h3>
-                    <p className="text-sm text-slate-500">{tool.description}</p>
-                    <div className="mt-1 flex items-center text-xs text-slate-400">
-                      <span>{tool.type}</span>
-                      <span className="mx-2">•</span>
-                      <span>{tool.size}</span>
+            {sections.tools_data && sections.tools_data.tools && sections.tools_data.tools.length > 0 && (
+              <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:gap-8">
+                {sections.tools_data.tools.map((tool, index) => (
+                  <motion.div
+                    key={tool.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow duration-300"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
+                        <DocumentTextIcon className="h-6 w-6 text-slate-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium text-slate-900">{tool.name}</h3>
+                        <p className="text-sm text-slate-500">{tool.description}</p>
+                        <div className="mt-1 flex items-center text-xs text-slate-400">
+                          <span>{tool.type}</span>
+                          <span className="mx-2">•</span>
+                          <span>{tool.size}</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <button className="inline-flex items-center rounded-md bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-100">
-                  <ArrowDownTrayIcon className="mr-2 h-4 w-4" />
-                  Get Tool
-                </button>
-              </motion.div>
-            ))}
+                    <button className="inline-flex items-center rounded-md bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-100">
+                      <ArrowDownTrayIcon className="mr-2 h-4 w-4" />
+                      Get Tool
+                    </button>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Educational Content */}
-      <section className="bg-blue-900 py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-amber-400">{sections.educational?.subtitle || 'Learn & Grow'}</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              {sections.educational?.title || 'Educational Resources'}
-            </p>
-            <p className="mt-6 text-lg leading-8 text-blue-100">
-              {sections.educational?.description || 'Expand your knowledge with our comprehensive educational content library'}
-            </p>
-          </div>
+      {sections.educational && (
+        <section className="bg-blue-900 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl lg:text-center">
+              <h2 className="text-base font-semibold leading-7 text-amber-400">{sections.educational.subtitle}</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                {sections.educational.title}
+              </p>
+              <p className="mt-6 text-lg leading-8 text-blue-100">
+                {sections.educational.description}
+              </p>
+            </div>
 
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+              <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -272,6 +293,7 @@ export default function Resources() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Newsletter and Contact CTA */}
       <section className="py-24 sm:py-32">

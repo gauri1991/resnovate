@@ -16,7 +16,30 @@ class LeadSerializer(serializers.ModelSerializer):
             # Legacy fields for compatibility
             'message', 'budget_range', 'project_timeline'
         ]
-        read_only_fields = ['created_at', 'updated_at', 'name']
+        read_only_fields = ['created_at', 'updated_at']
+        extra_kwargs = {
+            'email': {'required': False, 'allow_blank': True},
+            'first_name': {'required': False, 'allow_blank': True},
+            'last_name': {'required': False, 'allow_blank': True},
+            'project_type': {'required': False, 'allow_blank': True},
+            'description': {'required': False, 'allow_blank': True},
+        }
+
+    def create(self, validated_data):
+        # Handle simplified form: name -> first_name/last_name, message -> description
+        if 'name' in validated_data and not validated_data.get('first_name'):
+            name_parts = validated_data['name'].split(' ', 1)
+            validated_data['first_name'] = name_parts[0]
+            validated_data['last_name'] = name_parts[1] if len(name_parts) > 1 else ''
+
+        if 'message' in validated_data and not validated_data.get('description'):
+            validated_data['description'] = validated_data['message']
+
+        # Set project_type to 'general_inquiry' if not provided
+        if not validated_data.get('project_type'):
+            validated_data['project_type'] = 'General Inquiry'
+
+        return super().create(validated_data)
 
 
 class NewsletterSubscriberSerializer(serializers.ModelSerializer):

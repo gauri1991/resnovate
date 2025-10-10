@@ -64,6 +64,9 @@ export interface ConsultationSlot {
   is_available: boolean;
   price: string;
   meeting_type: string;
+  communication_method: 'zoom' | 'teams' | 'direct_call' | 'google_meet';
+  requires_payment: boolean;
+  payment_amount: string;
 }
 
 export interface Booking {
@@ -72,8 +75,26 @@ export interface Booking {
   slot: ConsultationSlot;
   status: string;
   paid: boolean;
+  communication_method: 'zoom' | 'teams' | 'direct_call' | 'google_meet';
   meeting_link?: string;
   notes?: string;
+}
+
+export interface Payment {
+  id?: number;
+  booking: number;
+  amount: string;
+  currency: string;
+  stripe_payment_intent_id: string;
+  stripe_payment_status: 'pending' | 'processing' | 'succeeded' | 'failed' | 'refunded' | 'partially_refunded';
+  paid_at?: string;
+  refunded: boolean;
+  refunded_at?: string;
+  refund_amount: string;
+  refund_reason?: string;
+  metadata: Record<string, any>;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface PageSection {

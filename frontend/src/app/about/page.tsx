@@ -66,164 +66,184 @@ export default function About() {
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-secondary py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mx-auto max-w-2xl text-center"
-          >
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-              {sections.hero?.title || 'About'} <span className="text-gradient">{sections.hero?.title ? '' : 'Resnovate'}</span>
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {sections.hero?.description || "We're on a mission to transform businesses across industries through artificial intelligence, machine learning, and innovative solutions that drive measurable results."}
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      {sections.hero && (
+        <section className="relative bg-gradient-secondary py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="mx-auto max-w-2xl text-center"
+            >
+              <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
+                {sections.hero.title}
+              </h1>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {sections.hero.description}
+              </p>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Mission Statement */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-900">Our Mission</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {sections.overview?.title || 'Empowering Business Excellence Through AI'}
-            </p>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {sections.overview?.mission || "At Resnovate, we believe that artificial intelligence should not replace human expertise, but amplify it. Our mission is to provide businesses with the most advanced AI-powered tools and insights, enabling them to make better decisions, reduce risks, and maximize returns while driving digital transformation and innovation."}
-            </p>
-          </div>
+      {(sections.overview || sections.values) && (
+        <section className="py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            {sections.overview && (
+              <div className="mx-auto max-w-2xl lg:text-center">
+                <h2 className="text-base font-semibold leading-7 text-blue-900">Our Mission</h2>
+                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                  {sections.overview.title}
+                </p>
+                <p className="mt-6 text-lg leading-8 text-slate-600">
+                  {sections.overview.mission}
+                </p>
+              </div>
+            )}
 
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
-              {(sections.values?.values || values).map((value: any, index: number) => (
-                <motion.div
-                  key={value.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="flex flex-col"
-                >
-                  <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-slate-900">
-                    {value.icon ? <value.icon className="h-5 w-5 flex-none text-blue-900" aria-hidden="true" /> : <LightBulbIcon className="h-5 w-5 flex-none text-blue-900" />}
-                    {value.name}
-                  </dt>
-                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
-                    <p className="flex-auto">{value.description}</p>
-                  </dd>
-                </motion.div>
-              ))}
-            </dl>
+            {sections.values && sections.values.values && sections.values.values.length > 0 && (
+              <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+                <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
+                  {sections.values.values.map((value: any, index: number) => (
+                    <motion.div
+                      key={`value-${index}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="flex flex-col"
+                    >
+                      <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-slate-900">
+                        {value.icon ? <value.icon className="h-5 w-5 flex-none text-blue-900" aria-hidden="true" /> : <LightBulbIcon className="h-5 w-5 flex-none text-blue-900" />}
+                        {value.name}
+                      </dt>
+                      <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-slate-600">
+                        <p className="flex-auto">{value.description}</p>
+                      </dd>
+                    </motion.div>
+                  ))}
+                </dl>
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Our Story/Timeline */}
-      <section className="bg-slate-50 py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.milestones?.subtitle || 'Our Journey'}</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {sections.milestones?.title || 'Building the Future of Business Through AI'}
-            </p>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {sections.milestones?.description || 'From a vision to revolutionize business through AI to becoming a trusted partner for hundreds of enterprises and organizations worldwide.'}
-            </p>
-          </div>
-
-          <div className="mx-auto mt-16 max-w-4xl">
-            <div className="space-y-8">
-              {sections.milestones?.milestones?.map((milestone, index) => (
-                <motion.div
-                  key={milestone.year}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="relative flex items-center space-x-4"
-                >
-                  <div className="flex-shrink-0">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-900 text-white font-bold text-lg">
-                      {milestone.year}
-                    </div>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-lg font-semibold text-slate-900">{milestone.title}</h3>
-                    <p className="mt-1 text-slate-600">{milestone.description}</p>
-                  </div>
-                </motion.div>
-              ))}
+      {sections.milestones && (
+        <section className="bg-slate-50 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl lg:text-center">
+              <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.milestones.subtitle}</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {sections.milestones.title}
+              </p>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {sections.milestones.description}
+              </p>
             </div>
+
+            {sections.milestones.milestones && sections.milestones.milestones.length > 0 && (
+              <div className="mx-auto mt-16 max-w-4xl">
+                <div className="space-y-8">
+                  {sections.milestones.milestones.map((milestone, index) => (
+                    <motion.div
+                      key={`milestone-${index}`}
+                      initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="relative flex items-center space-x-4"
+                    >
+                      <div className="flex-shrink-0">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-900 text-white font-bold text-lg">
+                          {milestone.year}
+                        </div>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="text-lg font-semibold text-slate-900">{milestone.title}</h3>
+                        <p className="mt-1 text-slate-600">{milestone.description}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Team Section */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-900">Our Team</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {sections.team?.title || 'Meet the Experts Behind the Innovation'}
-            </p>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {sections.team?.description || 'Our diverse team combines decades of business expertise with cutting-edge AI research and development experience.'}
-            </p>
-          </div>
+      {sections.team && (
+        <section className="py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl lg:text-center">
+              <h2 className="text-base font-semibold leading-7 text-blue-900">Our Team</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {sections.team.title}
+              </p>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {sections.team.description}
+              </p>
+            </div>
 
-          <div className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-4">
-            {(sections.team?.team_members || team).map((person: any, index: number) => (
-              <motion.div
-                key={person.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="flex flex-col items-center"
-              >
-                <div className="h-48 w-48 rounded-full bg-slate-200 mb-4"></div>
-                <h3 className="text-lg font-semibold text-slate-900">{person.name}</h3>
-                <p className="text-blue-900 font-medium">{person.role}</p>
-                <p className="mt-3 text-sm text-slate-600 text-center">{person.bio}</p>
-              </motion.div>
-            ))}
+            {sections.team.team_members && sections.team.team_members.length > 0 && (
+              <div className="mx-auto mt-20 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-4">
+                {sections.team.team_members.map((person: any, index: number) => (
+                  <motion.div
+                    key={`team-member-${index}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="flex flex-col items-center"
+                  >
+                    <div className="h-48 w-48 rounded-full bg-slate-200 mb-4"></div>
+                    <h3 className="text-lg font-semibold text-slate-900">{person.name}</h3>
+                    <p className="text-blue-900 font-medium">{person.role}</p>
+                    <p className="mt-3 text-sm text-slate-600 text-center">{person.bio}</p>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Stats/Achievements */}
-      <section className="bg-blue-900 py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              {sections.stats?.title || 'Our Impact by the Numbers'}
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-blue-100">
-              {sections.stats?.description || 'Measurable results that demonstrate our commitment to client success and industry innovation.'}
-            </p>
-          </div>
+      {sections.stats && (
+        <section className="bg-blue-900 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl lg:text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                {sections.stats.title}
+              </h2>
+              <p className="mt-6 text-lg leading-8 text-blue-100">
+                {sections.stats.description}
+              </p>
+            </div>
 
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-            <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-4">
-              {sections.stats?.stats?.map((stat, index) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="mx-auto flex max-w-xs flex-col gap-y-4"
-                >
-                  <dt className="text-base leading-7 text-blue-100">{stat.label}</dt>
-                  <dd className="order-first text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-                    {stat.value}
-                  </dd>
-                </motion.div>
-              ))}
-            </dl>
+            {sections.stats.stats && sections.stats.stats.length > 0 && (
+              <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+                <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-4">
+                  {sections.stats.stats.map((stat, index) => (
+                    <motion.div
+                      key={`stat-${index}`}
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="mx-auto flex max-w-xs flex-col gap-y-4"
+                    >
+                      <dt className="text-base leading-7 text-blue-100">{stat.label}</dt>
+                      <dd className="order-first text-3xl font-semibold tracking-tight text-white sm:text-5xl">
+                        {stat.value}
+                      </dd>
+                    </motion.div>
+                  ))}
+                </dl>
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="py-24 sm:py-32">

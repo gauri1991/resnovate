@@ -93,12 +93,27 @@ class PageSectionViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET'], permission_classes=[AllowAny])
     def by_page(self, request):
-        """Get all sections for a specific page grouped by page"""
+        """Get all sections for a specific page grouped by page
+
+        Authenticated admin users see all sections (enabled + disabled) for management.
+        Public users only see enabled sections.
+        """
         pages = PageSection.PAGE_CHOICES
         result = {}
 
         for page_key, page_name in pages:
-            sections = PageSection.objects.filter(page_identifier=page_key).order_by('order')
+            # Authenticated admin users see all sections to manage them
+            # Public users only see enabled sections
+            if request.user.is_authenticated:
+                sections = PageSection.objects.filter(
+                    page_identifier=page_key
+                ).order_by('order')
+            else:
+                sections = PageSection.objects.filter(
+                    page_identifier=page_key,
+                    enabled=True
+                ).order_by('order')
+
             result[page_key] = {
                 'name': page_name,
                 'sections': PageSectionSerializer(sections, many=True).data

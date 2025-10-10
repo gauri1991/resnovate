@@ -48,124 +48,138 @@ export default function Services() {
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-secondary py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mx-auto max-w-2xl text-center"
-          >
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-              {sections.header?.title || 'Our Services'}
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {sections.header?.description || 'Comprehensive AI consulting services designed to transform your business operations, from strategy development to implementation and ongoing optimization.'}
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      {sections.header && (
+        <section className="relative bg-gradient-secondary py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="mx-auto max-w-2xl text-center"
+            >
+              <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
+                {sections.header.title}
+              </h1>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {sections.header.description}
+              </p>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Core Services Grid */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.services_list?.subtitle || 'What We Offer'}</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {sections.services_list?.title || 'Comprehensive AI Consulting Solutions'}
-            </p>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {sections.services_list?.description || 'Choose from our suite of specialized AI services, each designed to address specific challenges and opportunities across various industries.'}
-            </p>
-          </div>
+      {(sections.services_list || sections.core_services) && (
+        <section className="py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            {sections.services_list && (
+              <div className="mx-auto max-w-2xl text-center">
+                <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.services_list.subtitle}</h2>
+                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                  {sections.services_list.title}
+                </p>
+                <p className="mt-6 text-lg leading-8 text-slate-600">
+                  {sections.services_list.description}
+                </p>
+              </div>
+            )}
 
-          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-8">
-            {sections.core_services?.services?.map((service, index) => {
-              const IconComponent = iconMapping[service.name] || ChartBarIcon;
-              return (
-                <motion.div
-                  key={service.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="flex flex-col justify-between rounded-2xl bg-white p-8 shadow-lg ring-1 ring-slate-200 hover:shadow-xl transition-shadow duration-300"
-                >
-                  <div>
-                    <div className="mb-6">
-                      <IconComponent className="h-8 w-8 text-blue-900" aria-hidden="true" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-slate-900">{service.name}</h3>
-                    <p className="mt-4 text-sm text-slate-600">{service.description}</p>
-
-                    <ul className="mt-6 space-y-2">
-                      {service.features.map((feature) => (
-                        <li key={feature} className="flex items-start">
-                          <CheckIcon className="h-5 w-5 text-blue-900 mr-2 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-slate-600">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="mt-8">
-                    <div className="mb-4">
-                      <div className="text-sm text-slate-500">Starting from</div>
-                      <div className="text-lg font-semibold text-slate-900">{service.priceRange}</div>
-                      <div className="text-sm text-slate-500">Timeline: {service.duration}</div>
-                    </div>
-
-                    <button
-                      onClick={() => setSelectedService(service.name)}
-                      className="w-full rounded-md bg-blue-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900 transition-colors duration-200"
+            {sections.core_services && sections.core_services.services && sections.core_services.services.length > 0 && (
+              <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-8">
+                {sections.core_services.services.map((service, index) => {
+                  const IconComponent = iconMapping[service.name] || ChartBarIcon;
+                  return (
+                    <motion.div
+                      key={service.name}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="flex flex-col justify-between rounded-2xl bg-white p-8 shadow-lg ring-1 ring-slate-200 hover:shadow-xl transition-shadow duration-300"
                     >
-                      Learn More
-                    </button>
-                  </div>
-                </motion.div>
-              );
-            })}
+                      <div>
+                        <div className="mb-6">
+                          <IconComponent className="h-8 w-8 text-blue-900" aria-hidden="true" />
+                        </div>
+                        <h3 className="text-xl font-semibold text-slate-900">{service.name}</h3>
+                        <p className="mt-4 text-sm text-slate-600">{service.description}</p>
+
+                        <ul className="mt-6 space-y-2">
+                          {service.features.map((feature) => (
+                            <li key={feature} className="flex items-start">
+                              <CheckIcon className="h-5 w-5 text-blue-900 mr-2 mt-0.5 flex-shrink-0" />
+                              <span className="text-sm text-slate-600">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="mt-8">
+                        <div className="mb-4">
+                          <div className="text-sm text-slate-500">Starting from</div>
+                          <div className="text-lg font-semibold text-slate-900">{service.priceRange}</div>
+                          <div className="text-sm text-slate-500">Timeline: {service.duration}</div>
+                        </div>
+
+                        <button
+                          onClick={() => setSelectedService(service.name)}
+                          className="w-full rounded-md bg-blue-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900 transition-colors duration-200"
+                        >
+                          Learn More
+                        </button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Process Section */}
-      <section className="bg-slate-50 py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.process?.subtitle || 'Our Process'}</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {sections.process?.title || 'How We Deliver Results'}
-            </p>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {sections.process?.description || 'Our proven methodology ensures successful implementation and measurable results for every project.'}
-            </p>
-          </div>
+      {(sections.process || sections.process_steps) && (
+        <section className="bg-slate-50 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            {sections.process && (
+              <div className="mx-auto max-w-2xl text-center">
+                <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.process.subtitle}</h2>
+                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                  {sections.process.title}
+                </p>
+                <p className="mt-6 text-lg leading-8 text-slate-600">
+                  {sections.process.description}
+                </p>
+              </div>
+            )}
 
-          <div className="mx-auto mt-16 max-w-4xl">
-            <div className="space-y-12">
-              {sections.process_steps?.steps?.map((step, index) => (
-                <motion.div
-                  key={step.step}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="flex items-start space-x-4"
-                >
-                  <div className="flex-shrink-0">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-900 text-white font-bold">
-                      {step.step}
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-slate-900">{step.title}</h3>
-                    <p className="mt-2 text-slate-600">{step.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            {sections.process_steps && sections.process_steps.steps && sections.process_steps.steps.length > 0 && (
+              <div className="mx-auto mt-16 max-w-4xl">
+                <div className="space-y-12">
+                  {sections.process_steps.steps.map((step, index) => (
+                    <motion.div
+                      key={step.step}
+                      initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="flex items-start space-x-4"
+                    >
+                      <div className="flex-shrink-0">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-900 text-white font-bold">
+                          {step.step}
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900">{step.title}</h3>
+                        <p className="mt-2 text-slate-600">{step.description}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* API Services Section */}
       {!isLoading && services.length > 0 && (
@@ -221,16 +235,17 @@ export default function Services() {
       )}
 
       {/* Why Choose Us */}
-      <section className="bg-blue-900 py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              {sections.why_choose?.title || 'Why Choose Resnovate.ai?'}
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-blue-100">
-              {sections.why_choose?.description || 'We combine deep industry expertise with cutting-edge AI technology to deliver solutions that drive measurable business results across all sectors.'}
-            </p>
-          </div>
+      {sections.why_choose && (
+        <section className="bg-blue-900 py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                {sections.why_choose.title}
+              </h2>
+              <p className="mt-6 text-lg leading-8 text-blue-100">
+                {sections.why_choose.description}
+              </p>
+            </div>
 
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
             <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
@@ -305,29 +320,32 @@ export default function Services() {
           </div>
         </div>
       </section>
+      )}
 
       {/* CTA Section */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {sections.cta?.title || 'Ready to Transform Your Business?'}
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {sections.cta?.description || 'Get a free consultation to discover which of our services can deliver the biggest impact for your business.'}
-            </p>
+      {sections.cta && (
+        <section className="py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {sections.cta.title}
+              </h2>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {sections.cta.description}
+              </p>
+            </div>
+
+            <div className="mx-auto mt-16 max-w-2xl">
+              <LeadCaptureForm
+                title="Get Your Free Consultation"
+                description="Tell us about your challenges and goals, and we'll recommend the best solutions for your needs."
+                submitText="Request Consultation"
+                source="services_page"
+              />
+            </div>
           </div>
-          
-          <div className="mx-auto mt-16 max-w-2xl">
-            <LeadCaptureForm
-              title="Get Your Free Consultation"
-              description="Tell us about your challenges and goals, and we'll recommend the best solutions for your needs."
-              submitText="Request Consultation"
-              source="services_page"
-            />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Service Details Modal/Popup could be added here */}
       {selectedService && (

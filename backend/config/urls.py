@@ -15,6 +15,7 @@ from apps.content.views import BlogPostViewSet, CaseStudyViewSet, ServiceViewSet
 from apps.leads.views import LeadViewSet, NewsletterSubscriberViewSet
 from apps.consultations.views import ConsultationSlotViewSet, BookingViewSet
 from apps.users.views import current_user
+from apps.payments.views import stripe_webhook
 
 @require_http_methods(["GET"])
 def health_check(request):
@@ -63,6 +64,7 @@ urlpatterns = [
     path('api/health/', health_check, name='health_check'),
     path('api/', include(router.urls)),
     path('api/marketing/', include('apps.marketing.urls')),
+    path('api/webhooks/stripe/', stripe_webhook, name='stripe_webhook'),
     path('api/auth/', include('rest_framework.urls')),
     path('api/auth/user/', current_user, name='current_user'),
     path('api/dashboard/stats/', dashboard_stats, name='dashboard_stats'),

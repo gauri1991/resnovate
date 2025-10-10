@@ -33,17 +33,17 @@ class Lead(models.Model):
     ]
     
     # Personal Information
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    email = models.EmailField(validators=[EmailValidator()])
+    first_name = models.CharField(max_length=50, blank=True)
+    last_name = models.CharField(max_length=50, blank=True)
+    email = models.EmailField(validators=[EmailValidator()], blank=True)
     phone = models.CharField(max_length=20, blank=True)
     
     # Project Information
-    project_type = models.CharField(max_length=100)
+    project_type = models.CharField(max_length=100, blank=True)
     budget = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     timeline = models.CharField(max_length=100, blank=True)
     location = models.CharField(max_length=200, blank=True)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     
     # Lead Management
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default='website')

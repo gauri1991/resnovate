@@ -94,55 +94,63 @@ export default function ResearchInsights() {
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-secondary py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mx-auto max-w-2xl text-center"
-          >
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
-              {sections.header?.title || 'Research Insights'}
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-600">
-              {sections.header?.description || 'Stay ahead of the curve with our latest AI research, implementation guides, and industry insights. Discover trends, strategies, and innovations shaping the future of AI-driven business transformation.'}
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      {sections.header && (
+        <section className="relative bg-gradient-secondary py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="mx-auto max-w-2xl text-center"
+            >
+              <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-6xl">
+                {sections.header.title}
+              </h1>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {sections.header.description}
+              </p>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Featured Topics */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.featured?.subtitle || 'Featured Topics'}</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-              {sections.featured?.title || 'Explore Key Areas of Innovation'}
-            </p>
-          </div>
+      {(sections.featured || sections.featured_topics_data) && (
+        <section className="py-16 sm:py-24">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            {sections.featured && (
+              <div className="mx-auto max-w-2xl text-center">
+                <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.featured.subtitle}</h2>
+                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                  {sections.featured.title}
+                </p>
+              </div>
+            )}
 
-          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-8">
-            {sections.featured_topics_data?.topics?.map((topic, index) => (
-              <motion.div
-                key={topic.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="flex flex-col justify-between rounded-2xl bg-slate-50 p-8 hover:shadow-lg transition-shadow duration-300"
-              >
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-900">{topic.title}</h3>
-                  <p className="mt-4 text-sm text-slate-600">{topic.description}</p>
-                </div>
-                <div className="mt-6 flex items-center text-sm text-blue-900">
-                  <span className="font-medium">{topic.posts} articles</span>
-                </div>
-              </motion.div>
-            ))}
+            {sections.featured_topics_data && sections.featured_topics_data.topics && sections.featured_topics_data.topics.length > 0 && (
+              <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-8">
+                {sections.featured_topics_data.topics.map((topic, index) => (
+                  <motion.div
+                    key={topic.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="flex flex-col justify-between rounded-2xl bg-slate-50 p-8 hover:shadow-lg transition-shadow duration-300"
+                  >
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900">{topic.title}</h3>
+                      <p className="mt-4 text-sm text-slate-600">{topic.description}</p>
+                    </div>
+                    <div className="mt-6 flex items-center text-sm text-blue-900">
+                      <span className="font-medium">{topic.posts} articles</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Search and Filters */}
       <section className="bg-slate-50 py-16">
@@ -278,29 +286,31 @@ export default function ResearchInsights() {
       </section>
 
       {/* Newsletter CTA */}
-      <section className="bg-blue-900 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              {sections.cta?.title || 'Stay Updated with Latest Insights'}
-            </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-blue-100">
-              {sections.cta?.description || 'Get our latest research insights and market analysis delivered to your inbox every week.'}
-            </p>
+      {sections.cta && (
+        <section className="bg-blue-900 py-16 sm:py-24">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                {sections.cta.title}
+              </h2>
+              <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-blue-100">
+                {sections.cta.description}
+              </p>
+            </div>
+
+            <div className="mx-auto mt-12 max-w-md">
+              <NewsletterForm
+                title=""
+                description=""
+                placeholder="Enter your email"
+                buttonText="Subscribe to Updates"
+                className="text-white"
+                inline={true}
+              />
+            </div>
           </div>
-          
-          <div className="mx-auto mt-12 max-w-md">
-            <NewsletterForm
-              title=""
-              description=""
-              placeholder="Enter your email"
-              buttonText="Subscribe to Updates"
-              className="text-white"
-              inline={true}
-            />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }

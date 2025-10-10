@@ -2,7 +2,7 @@
   from pkg_resources import DistributionNotFound, get_distribution
 Operations to perform:
   Synchronize unmigrated apps: corsheaders, messages, rest_framework, rest_framework_simplejwt, staticfiles
-  Apply all migrations: admin, analytics, auth, consultations, content, contenttypes, leads, marketing, sessions
+  Apply all migrations: admin, analytics, auth, consultations, content, contenttypes, leads, marketing, payments, sessions
 Synchronizing apps without migrations:
   Creating tables...
     Running deferred SQL...
