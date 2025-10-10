@@ -44,20 +44,6 @@ class Migration(migrations.Migration):
                 max_digits=10
             ),
         ),
-        # Add communication_method to Booking
-        migrations.AddField(
-            model_name='booking',
-            name='communication_method',
-            field=models.CharField(
-                choices=[
-                    ('zoom', 'Zoom'),
-                    ('teams', 'Microsoft Teams'),
-                    ('direct_call', 'Direct Call'),
-                    ('google_meet', 'Google Meet')
-                ],
-                default='zoom',
-                help_text='Selected communication method for this booking',
-                max_length=20
-            ),
-        ),
+        # Note: communication_method field already exists on Booking model from previous migration
+        # Removed duplicate AddField operation to prevent migration conflict
     ]
