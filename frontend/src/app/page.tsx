@@ -24,51 +24,26 @@ const iconMapping: Record<string, any> = {
   'Risk Management': ShieldCheckIcon,
 };
 
-const testimonials = [
-  {
-    id: 1,
-    body: 'Resnovate.ai transformed our approach to business operations. Their AI insights helped us identify optimization opportunities and streamline our processes, resulting in 40% higher efficiency.',
-    author: {
-      name: 'Sarah Chen',
-      handle: 'sarah_chen',
-      imageUrl: '/testimonial-1.jpg',
-      logoUrl: '/company-1.png',
-    },
-  },
-  {
-    id: 2,
-    body: 'The predictive analytics platform provided by Resnovate.ai gave us a significant competitive advantage. We can now forecast business trends and customer behavior with incredible accuracy.',
-    author: {
-      name: 'Michael Rodriguez',
-      handle: 'mrodriguez',
-      imageUrl: '/testimonial-2.jpg',
-      logoUrl: '/company-2.png',
-    },
-  },
-  {
-    id: 3,
-    body: 'Working with Resnovate.ai was game-changing for our enterprise transformation. Their innovative approach to AI implementation and process optimization exceeded our expectations.',
-    author: {
-      name: 'Jennifer Park',
-      handle: 'jpark',
-      imageUrl: '/testimonial-3.jpg',
-      logoUrl: '/company-3.png',
-    },
-  },
-];
-
 export default function Home() {
   const [recentPosts, setRecentPosts] = useState<BlogPost[]>([]);
   const [featuredCaseStudies, setFeaturedCaseStudies] = useState<CaseStudy[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Use CMS hook
-  const { sections } = useCMSContent('homepage');
+  const { sections, loading: cmsLoading } = useCMSContent('homepage');
   const heroSection = sections.hero;
   const ctaSection = sections.cta;
   const testimonialsSection = sections.testimonials;
   const statsSection = sections.stats;
   const featuresSection = sections.features;
+
+  // Fallback hero content
+  const defaultHeroContent = {
+    title: "Transform Your Business with AI Innovation",
+    subtitle: "Empowering enterprises with cutting-edge artificial intelligence solutions, data analytics, and intelligent automation to drive growth and efficiency.",
+    cta_text: "Get Started",
+    cta_link: "/contact"
+  };
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -165,29 +140,40 @@ export default function Home() {
 
   return (
     <div className="overflow-hidden">
-      {/* Hero Section */}
-      {heroSection && (
-        <section className="relative bg-gradient-primary">
-          <div className="absolute inset-0 bg-black opacity-10"></div>
-          <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+      {/* Hero Section - Always render with fallback */}
+      <section className="relative bg-gradient-primary">
+        <div className="absolute inset-0 bg-black opacity-10"></div>
+        <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+          {cmsLoading ? (
+            // Loading skeleton
+            <div className="text-center animate-pulse">
+              <div className="h-16 bg-white/20 rounded-lg mx-auto max-w-4xl mb-6"></div>
+              <div className="h-8 bg-white/20 rounded-lg mx-auto max-w-2xl mb-4"></div>
+              <div className="h-8 bg-white/20 rounded-lg mx-auto max-w-xl mb-10"></div>
+              <div className="flex items-center justify-center gap-x-6">
+                <div className="h-12 w-40 bg-white/30 rounded-md"></div>
+                <div className="h-12 w-48 bg-white/20 rounded-md"></div>
+              </div>
+            </div>
+          ) : (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.4 }}
               className="text-center"
             >
               <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                {heroSection.title}
+                {heroSection?.title || defaultHeroContent.title}
               </h1>
               <p className="mt-6 text-lg leading-8 text-white/90">
-                {heroSection.subtitle}
+                {heroSection?.subtitle || defaultHeroContent.subtitle}
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
                 <Link
-                  href={heroSection.cta_link || '/contact'}
+                  href={heroSection?.cta_link || defaultHeroContent.cta_link}
                   className="btn-secondary rounded-md px-6 py-3 text-base font-semibold shadow-sm hover:bg-amber-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
                 >
-                  {heroSection.cta_text}
+                  {heroSection?.cta_text || defaultHeroContent.cta_text}
                 </Link>
                 <Link
                   href="/case-studies"
@@ -197,23 +183,23 @@ export default function Home() {
                 </Link>
               </div>
             </motion.div>
-          </div>
+          )}
+        </div>
 
-          {/* Floating elements for visual appeal */}
-          <div className="absolute top-20 left-10 opacity-20">
-            <div className="h-16 w-16 rounded-full bg-white animate-pulse"></div>
-          </div>
-          <div className="absolute top-40 right-16 opacity-15">
-            <div className="h-12 w-12 rounded-full bg-amber-300 animate-bounce"></div>
-          </div>
-        </section>
-      )}
+        {/* Floating elements for visual appeal */}
+        <div className="absolute top-20 left-10 opacity-20">
+          <div className="h-16 w-16 rounded-full bg-white animate-pulse"></div>
+        </div>
+        <div className="absolute top-40 right-16 opacity-15">
+          <div className="h-12 w-12 rounded-full bg-amber-300 animate-bounce"></div>
+        </div>
+      </section>
 
       {/* Stats Section */}
       {statsSection && statsSection.stats && statsSection.stats.length > 0 && (
         <section className="bg-white py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-4">
+            <dl className="grid grid-cols-1 gap-x-8 gap-y-16 text-center md:grid-cols-2 lg:grid-cols-4">
               {statsSection.stats.map((stat, index) => (
                 <motion.div
                   key={stat.id || index}
@@ -249,7 +235,7 @@ export default function Home() {
 
             {featuresSection.features && featuresSection.features.length > 0 && (
               <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-                <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+                <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:max-w-none lg:gap-y-16">
                   {featuresSection.features.map((feature) => {
                     const IconComponent = iconMapping[feature.name] || ChartBarIcon;
                     return (
@@ -291,22 +277,59 @@ export default function Home() {
             {(testimonialsSection.testimonials && testimonialsSection.testimonials.length > 0) && (
               <div className="mx-auto mt-16 flow-root max-w-2xl sm:mt-20 lg:mx-0 lg:max-w-none">
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                  {testimonialsSection.testimonials.map((testimonial: any) => (
+                  {testimonialsSection.testimonials.map((testimonial: any, index: number) => (
                     <motion.div
-                      key={testimonial.id}
+                      key={testimonial.id || index}
                       initial={{ opacity: 0, scale: 0.9 }}
                       whileInView={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.5 }}
                       className="flex flex-col justify-between rounded-2xl bg-slate-50 p-8 shadow-lg"
                     >
-                      <blockquote className="text-base leading-7 text-slate-700">
-                        <p>"{testimonial.body || testimonial.quote || testimonial.text}"</p>
-                      </blockquote>
+                      <div>
+                        {/* Star rating */}
+                        {testimonial.rating && (
+                          <div className="flex items-center mb-4">
+                            {[...Array(5)].map((_, i) => (
+                              <svg
+                                key={i}
+                                className={`h-5 w-5 ${i < testimonial.rating ? 'text-amber-400' : 'text-gray-300'}`}
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                              </svg>
+                            ))}
+                          </div>
+                        )}
+
+                        <blockquote className="text-base leading-7 text-slate-700">
+                          <p>"{testimonial.body || testimonial.quote || testimonial.text}"</p>
+                        </blockquote>
+                      </div>
+
                       <figcaption className="mt-6 flex items-center gap-x-4">
-                        <div className="h-10 w-10 rounded-full bg-slate-300"></div>
+                        {testimonial.avatar ? (
+                          <img
+                            src={testimonial.avatar}
+                            alt={testimonial.author?.name || testimonial.name}
+                            className="h-10 w-10 rounded-full object-cover bg-slate-300"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                              (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
+                        ) : null}
+                        <div className={`h-10 w-10 rounded-full bg-slate-300 flex items-center justify-center text-slate-600 font-semibold ${testimonial.avatar ? 'hidden' : ''}`}>
+                          {(testimonial.author?.name || testimonial.name)?.charAt(0) || '?'}
+                        </div>
                         <div>
                           <div className="font-semibold text-slate-900">{testimonial.author?.name || testimonial.name}</div>
-                          <div className="text-sm leading-6 text-slate-600">{testimonial.author?.handle ? `@${testimonial.author.handle}` : (testimonial.title || testimonial.company)}</div>
+                          <div className="text-sm leading-6 text-slate-600">
+                            {testimonial.role && testimonial.company
+                              ? `${testimonial.role}, ${testimonial.company}`
+                              : testimonial.role || testimonial.company || testimonial.author?.handle ? `@${testimonial.author.handle}` : (testimonial.title)
+                            }
+                          </div>
                         </div>
                       </figcaption>
                     </motion.div>

@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import {
   ArrowLeftIcon,
   PhotoIcon,
@@ -12,6 +15,7 @@ import {
   DocumentDuplicateIcon,
   EyeIcon,
 } from '@heroicons/react/24/outline';
+import DynamicArrayField from '@/components/admin/DynamicArrayField';
 
 interface CaseStudy {
   id: number;
@@ -131,16 +135,79 @@ const categories = [
   'AI Training & Change Management',
 ];
 
+// Zod validation schema
+const caseStudySchema = z.object({
+  title: z.string().min(10, 'Title must be at least 10 characters').max(200, 'Title is too long'),
+  slug: z.string().min(3, 'Slug must be at least 3 characters').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
+  excerpt: z.string().min(20, 'Excerpt must be at least 20 characters').max(500, 'Excerpt is too long'),
+  content: z.string().min(100, 'Content must be at least 100 characters'),
+  status: z.enum(['draft', 'published', 'archived']),
+  client: z.string().min(2, 'Client name is required'),
+  location: z.string().min(2, 'Location is required'),
+  budget: z.number().min(0, 'Budget cannot be negative'),
+  duration: z.string().min(1, 'Duration is required'),
+  category: z.string().min(1, 'Please select a category'),
+  completedAt: z.string(),
+  featuredImage: z.string().url('Must be a valid URL').or(z.literal('')),
+  beforeImage: z.string().url('Must be a valid URL').or(z.literal('')),
+  afterImage: z.string().url('Must be a valid URL').or(z.literal('')),
+  tags: z.array(z.string()).min(1, 'Add at least one tag'),
+  challenges: z.array(z.string()).min(1, 'Add at least one challenge'),
+  solutions: z.array(z.string()).min(1, 'Add at least one solution'),
+  results: z.array(z.string()).min(1, 'Add at least one result'),
+});
+
+type CaseStudyFormData = z.infer<typeof caseStudySchema>;
+
 export default function EditCaseStudyPage() {
   const params = useParams();
   const router = useRouter();
-  const [formData, setFormData] = useState<CaseStudy | null>(null);
+  const [post, setPost] = useState<CaseStudy | null>(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [newTag, setNewTag] = useState('');
-  const [newChallenge, setNewChallenge] = useState('');
-  const [newSolution, setNewSolution] = useState('');
-  const [newResult, setNewResult] = useState('');
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<CaseStudyFormData>({
+    resolver: zodResolver(caseStudySchema),
+    defaultValues: {
+      title: '',
+      slug: '',
+      excerpt: '',
+      content: '',
+      status: 'draft',
+      client: '',
+      location: '',
+      budget: 0,
+      duration: '',
+      category: '',
+      completedAt: '',
+      featuredImage: '',
+      beforeImage: '',
+      afterImage: '',
+      tags: [],
+      challenges: [],
+      solutions: [],
+      results: [],
+    },
+  });
+
+  const watchedTitle = watch('title');
+
+  // Auto-generate slug from title
+  useEffect(() => {
+    if (watchedTitle && !post) {
+      const slug = watchedTitle
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+      setValue('slug', slug);
+    }
+  }, [watchedTitle, post, setValue]);
 
   useEffect(() => {
     fetchCaseStudy();
@@ -150,11 +217,33 @@ export default function EditCaseStudyPage() {
     try {
       // In a real app, this would fetch from the API
       // const response = await api.get(`/case-studies/${params.id}/`);
-      // setFormData(response.data);
-      
+      // const data = response.data;
+
       // For now, use mock data
       setTimeout(() => {
-        setFormData({ ...mockCaseStudy });
+        const data = { ...mockCaseStudy };
+        setPost(data);
+
+        // Populate form with case study data
+        setValue('title', data.title);
+        setValue('slug', data.slug);
+        setValue('excerpt', data.excerpt);
+        setValue('content', data.content);
+        setValue('status', data.status);
+        setValue('client', data.client);
+        setValue('location', data.location);
+        setValue('budget', data.budget);
+        setValue('duration', data.duration);
+        setValue('category', data.category);
+        setValue('completedAt', data.completedAt);
+        setValue('featuredImage', data.featuredImage);
+        setValue('beforeImage', data.beforeImage);
+        setValue('afterImage', data.afterImage);
+        setValue('tags', data.tags);
+        setValue('challenges', data.challenges);
+        setValue('solutions', data.solutions);
+        setValue('results', data.results);
+
         setLoading(false);
       }, 500);
     } catch (error) {
@@ -163,118 +252,17 @@ export default function EditCaseStudyPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData) return;
-
-    setSaving(true);
+  const onSubmit = async (data: CaseStudyFormData) => {
     try {
       // In a real app, this would save to the API
-      // await api.put(`/case-studies/${params.id}/`, formData);
-      
-      // Simulate API call
-      setTimeout(() => {
-        setSaving(false);
-        router.push(`/admin/content/case-studies/${params.id}`);
-      }, 1000);
+      // await api.put(`/case-studies/${params.id}/`, data);
+      console.log('Saving case study:', data);
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      router.push(`/admin/content/case-studies/${params.id}`);
     } catch (error) {
       console.error('Error saving case study:', error);
-      setSaving(false);
     }
-  };
-
-  const handleInputChange = (field: keyof CaseStudy, value: any) => {
-    if (!formData) return;
-    
-    setFormData({
-      ...formData,
-      [field]: value,
-      slug: field === 'title' ? generateSlug(value) : formData.slug,
-      updatedAt: new Date().toISOString(),
-    });
-  };
-
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  };
-
-  const addTag = () => {
-    if (!formData || !newTag.trim()) return;
-    
-    setFormData({
-      ...formData,
-      tags: [...formData.tags, newTag.trim()]
-    });
-    setNewTag('');
-  };
-
-  const removeTag = (index: number) => {
-    if (!formData) return;
-    
-    setFormData({
-      ...formData,
-      tags: formData.tags.filter((_, i) => i !== index)
-    });
-  };
-
-  const addChallenge = () => {
-    if (!formData || !newChallenge.trim()) return;
-    
-    setFormData({
-      ...formData,
-      challenges: [...formData.challenges, newChallenge.trim()]
-    });
-    setNewChallenge('');
-  };
-
-  const removeChallenge = (index: number) => {
-    if (!formData) return;
-    
-    setFormData({
-      ...formData,
-      challenges: formData.challenges.filter((_, i) => i !== index)
-    });
-  };
-
-  const addSolution = () => {
-    if (!formData || !newSolution.trim()) return;
-    
-    setFormData({
-      ...formData,
-      solutions: [...formData.solutions, newSolution.trim()]
-    });
-    setNewSolution('');
-  };
-
-  const removeSolution = (index: number) => {
-    if (!formData) return;
-    
-    setFormData({
-      ...formData,
-      solutions: formData.solutions.filter((_, i) => i !== index)
-    });
-  };
-
-  const addResult = () => {
-    if (!formData || !newResult.trim()) return;
-    
-    setFormData({
-      ...formData,
-      results: [...formData.results, newResult.trim()]
-    });
-    setNewResult('');
-  };
-
-  const removeResult = (index: number) => {
-    if (!formData) return;
-    
-    setFormData({
-      ...formData,
-      results: formData.results.filter((_, i) => i !== index)
-    });
   };
 
   if (loading) {
@@ -293,7 +281,7 @@ export default function EditCaseStudyPage() {
     );
   }
 
-  if (!formData) {
+  if (!post && !loading) {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Case Study Not Found</h2>
@@ -322,14 +310,16 @@ export default function EditCaseStudyPage() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Edit Case Study</h1>
-            <p className="text-sm text-gray-600">
-              Last updated {new Date(formData.updatedAt).toLocaleDateString()}
-            </p>
+            {post && (
+              <p className="text-sm text-gray-600">
+                Last updated {new Date(post.updatedAt).toLocaleDateString()}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex items-center space-x-2">
           <Link
-            href={`/case-studies/${formData.slug}`}
+            href={`/case-studies/${watch('slug')}`}
             target="_blank"
             className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
@@ -337,6 +327,7 @@ export default function EditCaseStudyPage() {
             Preview
           </Link>
           <button
+            type="button"
             onClick={() => router.push(`/admin/content/case-studies/${params.id}`)}
             className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
@@ -346,7 +337,7 @@ export default function EditCaseStudyPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">

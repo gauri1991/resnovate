@@ -1,8 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import {
   ArrowLeftIcon,
   WrenchScrewdriverIcon,
@@ -13,54 +16,70 @@ import {
 
 const categories = ['AI Strategy', 'Machine Learning', 'Data Analytics', 'Automation', 'Training', 'Custom Solutions', 'Consulting'];
 
+// Zod validation schema
+const serviceSchema = z.object({
+  name: z.string().min(3, 'Service name must be at least 3 characters').max(100, 'Service name is too long'),
+  slug: z.string().min(3, 'Slug must be at least 3 characters').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens'),
+  description: z.string().min(20, 'Description must be at least 20 characters'),
+  shortDescription: z.string().min(10, 'Short description must be at least 10 characters').max(200, 'Short description is too long'),
+  category: z.string().min(1, 'Please select a category'),
+  basePrice: z.number().min(0, 'Price cannot be negative'),
+  estimatedDuration: z.string().min(1, 'Please specify estimated duration'),
+  status: z.enum(['active', 'inactive', 'coming_soon']),
+  featured: z.boolean(),
+  icon: z.string().optional(),
+});
+
+type ServiceFormData = z.infer<typeof serviceSchema>;
+
 export default function NewServicePage() {
   const router = useRouter();
-  const [saving, setSaving] = useState(false);
 
-  const [formData, setFormData] = useState({
-    name: '',
-    slug: '',
-    description: '',
-    shortDescription: '',
-    category: '',
-    basePrice: 0,
-    estimatedDuration: '',
-    status: 'active' as 'active' | 'inactive' | 'coming_soon',
-    featured: false,
-    icon: '',
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<ServiceFormData>({
+    resolver: zodResolver(serviceSchema),
+    defaultValues: {
+      name: '',
+      slug: '',
+      description: '',
+      shortDescription: '',
+      category: '',
+      basePrice: 0,
+      estimatedDuration: '',
+      status: 'active',
+      featured: false,
+      icon: '',
+    },
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
+  const watchedName = watch('name');
 
+  // Auto-generate slug from name
+  useEffect(() => {
+    if (watchedName) {
+      const slug = watchedName
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .trim();
+      setValue('slug', slug);
+    }
+  }, [watchedName, setValue]);
+
+  const onSubmit = async (data: ServiceFormData) => {
     try {
       // Simulate API call
-      setTimeout(() => {
-        console.log('Creating service:', formData);
-        setSaving(false);
-        router.push('/admin/content/services');
-      }, 1000);
+      console.log('Creating service:', data);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      router.push('/admin/content/services');
     } catch (error) {
       console.error('Error creating service:', error);
-      setSaving(false);
     }
-  };
-
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .trim();
-  };
-
-  const handleNameChange = (name: string) => {
-    setFormData({
-      ...formData,
-      name,
-      slug: generateSlug(name),
-    });
   };
 
   return (
@@ -81,7 +100,7 @@ export default function NewServicePage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
@@ -97,12 +116,13 @@ export default function NewServicePage() {
                   </label>
                   <input
                     type="text"
-                    value={formData.name}
-                    onChange={(e) => handleNameChange(e.target.value)}
+                    {...register('name')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Enter service name"
-                    required
                   />
+                  {errors.name && (
+                    <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                  )}
                 </div>
 
                 <div>
@@ -111,14 +131,16 @@ export default function NewServicePage() {
                   </label>
                   <input
                     type="text"
-                    value={formData.slug}
-                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                    {...register('slug')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="service-url-slug"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    This will be used in the URL: /services/{formData.slug}
+                    This will be used in the URL: /services/{watch('slug') || 'your-slug'}
                   </p>
+                  {errors.slug && (
+                    <p className="mt-1 text-sm text-red-600">{errors.slug.message}</p>
+                  )}
                 </div>
 
                 <div>
@@ -127,12 +149,13 @@ export default function NewServicePage() {
                   </label>
                   <input
                     type="text"
-                    value={formData.shortDescription}
-                    onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
+                    {...register('shortDescription')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Brief description for listings"
-                    required
                   />
+                  {errors.shortDescription && (
+                    <p className="mt-1 text-sm text-red-600">{errors.shortDescription.message}</p>
+                  )}
                 </div>
 
                 <div>
@@ -141,12 +164,13 @@ export default function NewServicePage() {
                   </label>
                   <textarea
                     rows={6}
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    {...register('description')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Detailed service description"
-                    required
                   />
+                  {errors.description && (
+                    <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -168,13 +192,14 @@ export default function NewServicePage() {
                       </div>
                       <input
                         type="number"
-                        value={formData.basePrice}
-                        onChange={(e) => setFormData({ ...formData, basePrice: parseInt(e.target.value) || 0 })}
+                        {...register('basePrice', { valueAsNumber: true })}
                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="0"
-                        required
                       />
                     </div>
+                    {errors.basePrice && (
+                      <p className="mt-1 text-sm text-red-600">{errors.basePrice.message}</p>
+                    )}
                   </div>
 
                   <div>
@@ -187,13 +212,14 @@ export default function NewServicePage() {
                       </div>
                       <input
                         type="text"
-                        value={formData.estimatedDuration}
-                        onChange={(e) => setFormData({ ...formData, estimatedDuration: e.target.value })}
+                        {...register('estimatedDuration')}
                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="e.g., 8-12 weeks"
-                        required
                       />
                     </div>
+                    {errors.estimatedDuration && (
+                      <p className="mt-1 text-sm text-red-600">{errors.estimatedDuration.message}</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -213,10 +239,8 @@ export default function NewServicePage() {
                     Category *
                   </label>
                   <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    {...register('category')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
                   >
                     <option value="">Select category</option>
                     {categories.map((category) => (
@@ -225,6 +249,9 @@ export default function NewServicePage() {
                       </option>
                     ))}
                   </select>
+                  {errors.category && (
+                    <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>
+                  )}
                 </div>
 
                 <div>
@@ -232,15 +259,16 @@ export default function NewServicePage() {
                     Status *
                   </label>
                   <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                    {...register('status')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                     <option value="coming_soon">Coming Soon</option>
                   </select>
+                  {errors.status && (
+                    <p className="mt-1 text-sm text-red-600">{errors.status.message}</p>
+                  )}
                 </div>
 
                 <div>
@@ -249,8 +277,7 @@ export default function NewServicePage() {
                   </label>
                   <input
                     type="text"
-                    value={formData.icon}
-                    onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                    {...register('icon')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="🧠"
                     maxLength={2}
@@ -261,8 +288,7 @@ export default function NewServicePage() {
                   <input
                     type="checkbox"
                     id="featured"
-                    checked={formData.featured}
-                    onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                    {...register('featured')}
                     className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
                   <label htmlFor="featured" className="ml-2 text-sm text-gray-700">
@@ -278,10 +304,10 @@ export default function NewServicePage() {
                 <div className="space-y-3">
                   <button
                     type="submit"
-                    disabled={saving}
-                    className="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isSubmitting}
+                    className="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    {saving ? (
+                    {isSubmitting ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                         Creating...
@@ -292,7 +318,7 @@ export default function NewServicePage() {
                   </button>
                   <Link
                     href="/admin/content/services"
-                    className="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                    className="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                   >
                     Cancel
                   </Link>

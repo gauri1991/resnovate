@@ -80,7 +80,7 @@ export default function Navigation() {
                   onMouseLeave={() => setDropdownOpen(false)}
                 >
                   <button
-                    className={`flex items-center text-sm font-semibold leading-6 transition-colors duration-200 py-2 ${
+                    className={`flex items-center text-sm font-semibold leading-6 transition-colors duration-200 ${
                       pathname.startsWith('/industries')
                         ? 'text-blue-900'
                         : 'text-slate-600 hover:text-blue-900'

@@ -48,17 +48,15 @@ export default function Resources() {
       )}
 
       {/* Resource Categories */}
-      {(sections.library || sections.resource_categories_data) && (
+      {sections.library && (
         <section className="py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {sections.library && (
-              <div className="mx-auto max-w-2xl text-center">
-                <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.library.subtitle}</h2>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-                  {sections.library.title}
-                </p>
-              </div>
-            )}
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.library.subtitle}</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {sections.library.title}
+              </p>
+            </div>
 
             {sections.resource_categories_data && sections.resource_categories_data.categories && sections.resource_categories_data.categories.length > 0 && (
               <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:gap-8">
@@ -99,19 +97,17 @@ export default function Resources() {
       )}
 
       {/* Featured Resources */}
-      {(sections.featured || sections.featured_resources_data) && (
+      {sections.featured && (
         <section id="featured-resources" className="bg-slate-50 py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {sections.featured && (
-              <div className="mx-auto max-w-2xl text-center">
-                <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-                  {sections.featured.title}
-                </h2>
-                <p className="mt-6 text-lg leading-8 text-slate-600">
-                  {sections.featured.description}
-                </p>
-              </div>
-            )}
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {sections.featured.title}
+              </h2>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {sections.featured.description}
+              </p>
+            </div>
 
             {sections.featured_resources_data && sections.featured_resources_data.resources && sections.featured_resources_data.resources.length > 0 && (
               <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2">
@@ -156,19 +152,17 @@ export default function Resources() {
       )}
 
       {/* Tools & Calculators */}
-      {(sections.tools || sections.tools_data) && (
+      {sections.tools && (
         <section className="py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {sections.tools && (
-              <div className="mx-auto max-w-2xl text-center">
-                <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-                  {sections.tools.title}
-                </h2>
-                <p className="mt-6 text-lg leading-8 text-slate-600">
-                  {sections.tools.description}
-                </p>
-              </div>
-            )}
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {sections.tools.title}
+              </h2>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {sections.tools.description}
+              </p>
+            </div>
 
             {sections.tools_data && sections.tools_data.tools && sections.tools_data.tools.length > 0 && (
               <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:gap-8">
@@ -220,77 +214,113 @@ export default function Resources() {
               </p>
             </div>
 
-            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-              <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="relative pl-16"
-              >
-                <dt className="text-base font-semibold leading-7 text-white">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
-                    <AcademicCapIcon className="h-6 w-6 text-white" aria-hidden="true" />
-                  </div>
-                  Online Courses
-                </dt>
-                <dd className="mt-2 text-base leading-7 text-blue-100">
-                  Comprehensive courses on AI strategy, machine learning implementation, and digital transformation.
-                </dd>
-              </motion.div>
+            {sections.educational.offerings && sections.educational.offerings.length > 0 ? (
+              <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+                <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+                  {sections.educational.offerings.map((offering: any, index: number) => {
+                    const iconMap: Record<string, any> = {
+                      'academic': AcademicCapIcon,
+                      'video': VideoCameraIcon,
+                      'book': BookOpenIcon,
+                      'chart': ChartBarIcon,
+                    };
+                    const IconComponent = iconMap[offering.icon] || AcademicCapIcon;
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="relative pl-16"
-              >
-                <dt className="text-base font-semibold leading-7 text-white">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
-                    <VideoCameraIcon className="h-6 w-6 text-white" aria-hidden="true" />
-                  </div>
-                  Video Tutorials
-                </dt>
-                <dd className="mt-2 text-base leading-7 text-blue-100">
-                  Step-by-step video guides on AI implementation, tool usage, and best practices.
-                </dd>
-              </motion.div>
+                    return (
+                      <motion.div
+                        key={offering.name || index}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        className="relative pl-16"
+                      >
+                        <dt className="text-base font-semibold leading-7 text-white">
+                          <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
+                            <IconComponent className="h-6 w-6 text-white" aria-hidden="true" />
+                          </div>
+                          {offering.name}
+                        </dt>
+                        <dd className="mt-2 text-base leading-7 text-blue-100">
+                          {offering.description}
+                        </dd>
+                      </motion.div>
+                    );
+                  })}
+                </dl>
+              </div>
+            ) : (
+              <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+                <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="relative pl-16"
+                  >
+                    <dt className="text-base font-semibold leading-7 text-white">
+                      <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
+                        <AcademicCapIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                      </div>
+                      Online Courses
+                    </dt>
+                    <dd className="mt-2 text-base leading-7 text-blue-100">
+                      Comprehensive courses on AI strategy, machine learning implementation, and digital transformation.
+                    </dd>
+                  </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="relative pl-16"
-              >
-                <dt className="text-base font-semibold leading-7 text-white">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
-                    <BookOpenIcon className="h-6 w-6 text-white" aria-hidden="true" />
-                  </div>
-                  Knowledge Base
-                </dt>
-                <dd className="mt-2 text-base leading-7 text-blue-100">
-                  Extensive library of articles, guides, and FAQs covering all aspects of AI transformation.
-                </dd>
-              </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                    className="relative pl-16"
+                  >
+                    <dt className="text-base font-semibold leading-7 text-white">
+                      <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
+                        <VideoCameraIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                      </div>
+                      Video Tutorials
+                    </dt>
+                    <dd className="mt-2 text-base leading-7 text-blue-100">
+                      Step-by-step video guides on AI implementation, tool usage, and best practices.
+                    </dd>
+                  </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="relative pl-16"
-              >
-                <dt className="text-base font-semibold leading-7 text-white">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
-                    <ChartBarIcon className="h-6 w-6 text-white" aria-hidden="true" />
-                  </div>
-                  Industry Reports
-                </dt>
-                <dd className="mt-2 text-base leading-7 text-blue-100">
-                  Regular reports on AI trends, technology adoption, and industry transformation forecasts.
-                </dd>
-              </motion.div>
-            </dl>
-          </div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="relative pl-16"
+                  >
+                    <dt className="text-base font-semibold leading-7 text-white">
+                      <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
+                        <BookOpenIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                      </div>
+                      Knowledge Base
+                    </dt>
+                    <dd className="mt-2 text-base leading-7 text-blue-100">
+                      Extensive library of articles, guides, and FAQs covering all aspects of AI transformation.
+                    </dd>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                    className="relative pl-16"
+                  >
+                    <dt className="text-base font-semibold leading-7 text-white">
+                      <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
+                        <ChartBarIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                      </div>
+                      Industry Reports
+                    </dt>
+                    <dd className="mt-2 text-base leading-7 text-blue-100">
+                      Regular reports on AI trends, technology adoption, and industry transformation forecasts.
+                    </dd>
+                  </motion.div>
+                </dl>
+              </div>
+            )}
         </div>
       </section>
       )}

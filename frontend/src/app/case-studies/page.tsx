@@ -96,17 +96,15 @@ export default function CaseStudies() {
       )}
 
       {/* Metrics Section */}
-      {(sections.metrics || sections.metrics_data) && (
+      {sections.metrics && (
         <section className="py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {sections.metrics && (
-              <div className="mx-auto max-w-2xl lg:text-center">
-                <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.metrics.subtitle}</h2>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-                  {sections.metrics.title}
-                </p>
-              </div>
-            )}
+            <div className="mx-auto max-w-2xl lg:text-center">
+              <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.metrics.subtitle}</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {sections.metrics.title}
+              </p>
+            </div>
 
             {sections.metrics_data && sections.metrics_data.metrics && sections.metrics_data.metrics.length > 0 && (
               <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">

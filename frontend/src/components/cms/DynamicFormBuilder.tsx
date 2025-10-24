@@ -9,16 +9,28 @@ interface DynamicFormBuilderProps {
   onAddField?: () => void;
 }
 
-type FieldType = 'string' | 'number' | 'boolean' | 'array' | 'object' | 'url' | 'image';
+type FieldType = 'string' | 'number' | 'boolean' | 'array' | 'object' | 'url' | 'image' | 'textarea';
 
-const detectFieldType = (value: any): FieldType => {
+const formatFieldLabel = (key: string): string => {
+  return key
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+const detectFieldType = (key: string, value: any): FieldType => {
   if (typeof value === 'boolean') return 'boolean';
   if (typeof value === 'number') return 'number';
   if (Array.isArray(value)) return 'array';
   if (typeof value === 'object' && value !== null) return 'object';
   if (typeof value === 'string') {
     if (value.match(/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp|svg)$/i)) return 'image';
-    if (value.match(/^https?:\/\/.+/i)) return 'url';
+    if (value.match(/^https?:\/\/.+/i) || key.includes('link') || key.includes('url')) return 'url';
+    // Auto-detect textarea fields based on key name or content length
+    if (key.includes('description') || key.includes('content') || key.includes('mission') ||
+        key.includes('vision') || value.length > 100) {
+      return 'textarea';
+    }
     return 'string';
   }
   return 'string';
@@ -80,10 +92,38 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({
   };
 
   const renderField = (key: string, value: any) => {
-    const fieldType = detectFieldType(value);
+    const fieldType = detectFieldType(key, value);
     const fieldId = `field-${key}`;
+    const fieldLabel = formatFieldLabel(key);
 
     switch (fieldType) {
+      case 'textarea':
+        return (
+          <div key={key} className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label htmlFor={fieldId} className="block text-sm font-medium text-gray-700">
+                {fieldLabel}
+              </label>
+              <button
+                onClick={() => handleDeleteField(key)}
+                className="p-1 text-red-600 hover:bg-red-50 rounded"
+                title="Delete field"
+              >
+                <TrashIcon className="h-4 w-4" />
+              </button>
+            </div>
+            <textarea
+              id={fieldId}
+              value={value}
+              onChange={(e) => handleFieldChange(key, e.target.value)}
+              rows={6}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-sans"
+              placeholder={`Enter ${fieldLabel.toLowerCase()}...`}
+            />
+            <p className="text-xs text-gray-500">{value.length} characters</p>
+          </div>
+        );
+
       case 'boolean':
         return (
           <div key={key} className="space-y-2">
@@ -96,7 +136,7 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({
                   onChange={(e) => handleFieldChange(key, e.target.checked)}
                   className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span className="text-sm font-medium text-gray-700">{key}</span>
+                <span className="text-sm font-medium text-gray-700">{fieldLabel}</span>
               </label>
               <button
                 onClick={() => handleDeleteField(key)}
@@ -114,7 +154,7 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({
           <div key={key} className="space-y-2">
             <div className="flex items-center justify-between">
               <label htmlFor={fieldId} className="block text-sm font-medium text-gray-700">
-                {key}
+                {fieldLabel}
               </label>
               <button
                 onClick={() => handleDeleteField(key)}
@@ -139,7 +179,7 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({
           <div key={key} className="space-y-2">
             <div className="flex items-center justify-between">
               <label htmlFor={fieldId} className="block text-sm font-medium text-gray-700">
-                {key}
+                {fieldLabel}
               </label>
               <button
                 onClick={() => handleDeleteField(key)}
@@ -174,7 +214,7 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({
           <div key={key} className="space-y-2">
             <div className="flex items-center justify-between">
               <label htmlFor={fieldId} className="block text-sm font-medium text-gray-700">
-                {key}
+                {fieldLabel}
               </label>
               <button
                 onClick={() => handleDeleteField(key)}
@@ -213,7 +253,7 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({
           <div key={key} className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="block text-sm font-medium text-gray-700">
-                {key} ({arrayItems.length} items)
+                {fieldLabel} ({arrayItems.length} items)
               </label>
               <div className="flex items-center space-x-1">
                 <button
@@ -241,7 +281,7 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({
                         {Object.entries(item).map(([nestedKey, nestedValue]) => (
                           <div key={nestedKey} className="space-y-1">
                             <label className="block text-xs font-medium text-gray-600">
-                              {nestedKey}
+                              {formatFieldLabel(nestedKey)}
                             </label>
                             <input
                               type="text"
@@ -288,7 +328,7 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({
                 className="flex items-center space-x-2 text-sm font-medium text-gray-700 hover:text-gray-900"
               >
                 <span>{isExpanded ? '▼' : '▶'}</span>
-                <span>{key} ({objectEntries.length} fields)</span>
+                <span>{fieldLabel} ({objectEntries.length} fields)</span>
               </button>
               <button
                 onClick={() => handleDeleteField(key)}
@@ -303,7 +343,7 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({
                 {objectEntries.map(([nestedKey, nestedValue]) => (
                   <div key={nestedKey} className="space-y-2">
                     <label className="block text-sm font-medium text-gray-600">
-                      {nestedKey}
+                      {formatFieldLabel(nestedKey)}
                     </label>
                     <input
                       type="text"
@@ -320,12 +360,11 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({
 
       case 'string':
       default:
-        const isLongText = (value as string).length > 100;
         return (
           <div key={key} className="space-y-2">
             <div className="flex items-center justify-between">
               <label htmlFor={fieldId} className="block text-sm font-medium text-gray-700">
-                {key}
+                {fieldLabel}
               </label>
               <button
                 onClick={() => handleDeleteField(key)}
@@ -335,23 +374,14 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({
                 <TrashIcon className="h-4 w-4" />
               </button>
             </div>
-            {isLongText ? (
-              <textarea
-                id={fieldId}
-                value={value}
-                onChange={(e) => handleFieldChange(key, e.target.value)}
-                rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            ) : (
-              <input
-                id={fieldId}
-                type="text"
-                value={value}
-                onChange={(e) => handleFieldChange(key, e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            )}
+            <input
+              id={fieldId}
+              type="text"
+              value={value}
+              onChange={(e) => handleFieldChange(key, e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder={`Enter ${fieldLabel.toLowerCase()}...`}
+            />
           </div>
         );
     }

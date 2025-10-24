@@ -115,17 +115,15 @@ export default function ResearchInsights() {
       )}
 
       {/* Featured Topics */}
-      {(sections.featured || sections.featured_topics_data) && (
+      {sections.featured && (
         <section className="py-16 sm:py-24">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {sections.featured && (
-              <div className="mx-auto max-w-2xl text-center">
-                <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.featured.subtitle}</h2>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-                  {sections.featured.title}
-                </p>
-              </div>
-            )}
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.featured.subtitle}</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {sections.featured.title}
+              </p>
+            </div>
 
             {sections.featured_topics_data && sections.featured_topics_data.topics && sections.featured_topics_data.topics.length > 0 && (
               <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-8">

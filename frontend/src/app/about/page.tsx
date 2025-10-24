@@ -10,56 +10,6 @@ import {
 import LeadCaptureForm from '../../components/LeadCaptureForm';
 import { useCMSContent } from '@/hooks/useCMSContent';
 
-const values = [
-  {
-    name: 'Innovation First',
-    description: 'We constantly push the boundaries of what\'s possible in AI technology, delivering cutting-edge solutions that create competitive advantages for businesses across industries.',
-    icon: LightBulbIcon,
-  },
-  {
-    name: 'Client Success',
-    description: 'Your success is our success. We measure our achievements by the tangible results and ROI improvements we deliver to our clients.',
-    icon: TrophyIcon,
-  },
-  {
-    name: 'Collaborative Partnership',
-    description: 'We work as an extension of your team, bringing together diverse expertise to solve complex business challenges through AI innovation.',
-    icon: UserGroupIcon,
-  },
-  {
-    name: 'Global Perspective',
-    description: 'Our solutions are designed to work across markets and regions, incorporating global best practices and emerging trends.',
-    icon: GlobeAltIcon,
-  },
-];
-
-const team = [
-  {
-    name: 'Dr. Sarah Mitchell',
-    role: 'Founder & CEO',
-    bio: 'Former VP of Innovation at a Fortune 500 company with 15+ years in AI and technology transformation. PhD in Machine Learning from Stanford.',
-    image: '/team-sarah.jpg',
-  },
-  {
-    name: 'Marcus Chen',
-    role: 'CTO & Co-founder',
-    bio: 'Ex-Google AI researcher with expertise in computer vision and predictive analytics. Led development of three successful AI platforms for enterprise clients.',
-    image: '/team-marcus.jpg',
-  },
-  {
-    name: 'Jennifer Rodriguez',
-    role: 'Head of Strategy',
-    bio: '20+ years in business strategy and digital transformation. Former Director at McKinsey with extensive experience in AI-driven business solutions.',
-    image: '/team-jennifer.jpg',
-  },
-  {
-    name: 'David Kim',
-    role: 'Senior Data Scientist',
-    bio: 'PhD in Statistics from MIT. Specializes in predictive analytics, machine learning models, and AI-driven risk assessment for enterprises.',
-    image: '/team-david.jpg',
-  },
-];
-
 export default function About() {
   const { sections, loading } = useCMSContent('about');
 
@@ -87,20 +37,18 @@ export default function About() {
       )}
 
       {/* Mission Statement */}
-      {(sections.overview || sections.values) && (
+      {sections.overview && (
         <section className="py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {sections.overview && (
-              <div className="mx-auto max-w-2xl lg:text-center">
-                <h2 className="text-base font-semibold leading-7 text-blue-900">Our Mission</h2>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-                  {sections.overview.title}
-                </p>
-                <p className="mt-6 text-lg leading-8 text-slate-600">
-                  {sections.overview.mission}
-                </p>
-              </div>
-            )}
+            <div className="mx-auto max-w-2xl lg:text-center">
+              <h2 className="text-base font-semibold leading-7 text-blue-900">Our Mission</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {sections.overview.title}
+              </p>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {sections.overview.mission}
+              </p>
+            </div>
 
             {sections.values && sections.values.values && sections.values.values.length > 0 && (
               <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
@@ -196,10 +144,53 @@ export default function About() {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     className="flex flex-col items-center"
                   >
-                    <div className="h-48 w-48 rounded-full bg-slate-200 mb-4"></div>
+                    {person.image ? (
+                      <img
+                        src={person.image}
+                        alt={person.name}
+                        className="h-48 w-48 rounded-full object-cover bg-slate-200 mb-4"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                          (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                    ) : null}
+                    <div className={`h-48 w-48 rounded-full bg-slate-200 mb-4 flex items-center justify-center text-slate-500 text-6xl font-bold ${person.image ? 'hidden' : ''}`}>
+                      {person.name?.charAt(0) || '?'}
+                    </div>
                     <h3 className="text-lg font-semibold text-slate-900">{person.name}</h3>
                     <p className="text-blue-900 font-medium">{person.role}</p>
                     <p className="mt-3 text-sm text-slate-600 text-center">{person.bio}</p>
+
+                    {/* Social links */}
+                    {(person.linkedin || person.twitter) && (
+                      <div className="mt-4 flex items-center gap-x-4">
+                        {person.linkedin && (
+                          <a
+                            href={person.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-slate-400 hover:text-blue-600 transition-colors"
+                          >
+                            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                            </svg>
+                          </a>
+                        )}
+                        {person.twitter && (
+                          <a
+                            href={person.twitter}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-slate-400 hover:text-blue-400 transition-colors"
+                          >
+                            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                            </svg>
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </motion.div>
                 ))}
               </div>
