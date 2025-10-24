@@ -21,11 +21,35 @@ class CaseStudyAdmin(admin.ModelAdmin):
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price_range', 'duration', 'order', 'is_active']
-    list_filter = ['is_active']
+    list_display = ['name', 'price_range', 'duration', 'show_pricing', 'order', 'is_active']
+    list_filter = ['is_active', 'show_pricing']
     search_fields = ['name', 'description']
     prepopulated_fields = {'slug': ('name',)}
     ordering = ['order']
+
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('name', 'slug', 'description', 'short_description', 'category', 'icon')
+        }),
+        ('Pricing & Duration', {
+            'fields': ('base_price', 'price_range', 'estimated_duration', 'duration')
+        }),
+        ('Display Settings', {
+            'fields': ('status', 'is_active', 'featured', 'display_order', 'order')
+        }),
+        ('Call-to-Action Settings', {
+            'fields': (
+                'show_pricing',
+                'cta_primary_text', 'cta_primary_link',
+                'cta_secondary_text', 'cta_secondary_link'
+            ),
+            'description': 'Configure whether to show pricing or CTA buttons on the services page'
+        }),
+        ('Additional', {
+            'fields': ('features', 'bookings_count'),
+            'classes': ('collapse',)
+        }),
+    )
 
 
 @admin.register(PageSection)

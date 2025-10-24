@@ -133,7 +133,14 @@ class Service(models.Model):
     bookings_count = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
+    # CTA (Call-to-Action) settings
+    show_pricing = models.BooleanField(default=False, help_text='Show pricing instead of CTA buttons')
+    cta_primary_text = models.CharField(max_length=100, blank=True, default='Get Quick Quote', help_text='Primary CTA button text')
+    cta_primary_link = models.CharField(max_length=200, blank=True, default='/contact', help_text='Primary CTA button link')
+    cta_secondary_text = models.CharField(max_length=100, blank=True, default='Schedule Consultation', help_text='Secondary CTA button text')
+    cta_secondary_link = models.CharField(max_length=200, blank=True, default='/book-consultation', help_text='Secondary CTA button link')
+
     # Legacy fields
     price_range = models.CharField(max_length=100, blank=True)  # Use base_price instead
     duration = models.CharField(max_length=100, blank=True)  # Use estimated_duration instead

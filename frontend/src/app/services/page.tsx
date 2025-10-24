@@ -69,20 +69,18 @@ export default function Services() {
       )}
 
       {/* Core Services Grid */}
-      {(sections.services_list || sections.core_services) && (
+      {sections.services_list && (
         <section className="py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {sections.services_list && (
-              <div className="mx-auto max-w-2xl text-center">
-                <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.services_list.subtitle}</h2>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-                  {sections.services_list.title}
-                </p>
-                <p className="mt-6 text-lg leading-8 text-slate-600">
-                  {sections.services_list.description}
-                </p>
-              </div>
-            )}
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.services_list.subtitle}</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {sections.services_list.title}
+              </p>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {sections.services_list.description}
+              </p>
+            </div>
 
             {sections.core_services && sections.core_services.services && sections.core_services.services.length > 0 && (
               <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-8">
@@ -137,20 +135,18 @@ export default function Services() {
       )}
 
       {/* Process Section */}
-      {(sections.process || sections.process_steps) && (
+      {sections.process && (
         <section className="bg-slate-50 py-24 sm:py-32">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            {sections.process && (
-              <div className="mx-auto max-w-2xl text-center">
-                <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.process.subtitle}</h2>
-                <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-                  {sections.process.title}
-                </p>
-                <p className="mt-6 text-lg leading-8 text-slate-600">
-                  {sections.process.description}
-                </p>
-              </div>
-            )}
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-base font-semibold leading-7 text-blue-900">{sections.process.subtitle}</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+                {sections.process.title}
+              </p>
+              <p className="mt-6 text-lg leading-8 text-slate-600">
+                {sections.process.description}
+              </p>
+            </div>
 
             {sections.process_steps && sections.process_steps.steps && sections.process_steps.steps.length > 0 && (
               <div className="mx-auto mt-16 max-w-4xl">
@@ -221,11 +217,28 @@ export default function Services() {
                   </div>
                   
                   <div className="mt-8">
-                    <div className="mb-4">
-                      <div className="text-sm text-slate-500">Price Range</div>
-                      <div className="text-lg font-semibold text-slate-900">{service.price_range}</div>
-                      <div className="text-sm text-slate-500">Duration: {service.duration}</div>
-                    </div>
+                    {service.show_pricing ? (
+                      <div className="mb-4">
+                        <div className="text-sm text-slate-500">Price Range</div>
+                        <div className="text-lg font-semibold text-slate-900">{service.price_range}</div>
+                        <div className="text-sm text-slate-500">Duration: {service.duration}</div>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <a
+                          href={service.cta_primary_link}
+                          className="block w-full rounded-md bg-blue-900 px-4 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900 transition-colors duration-200"
+                        >
+                          {service.cta_primary_text}
+                        </a>
+                        <a
+                          href={service.cta_secondary_link}
+                          className="block w-full rounded-md bg-white px-4 py-2 text-center text-sm font-semibold text-blue-900 shadow-sm ring-1 ring-inset ring-blue-900 hover:bg-slate-50 transition-colors duration-200"
+                        >
+                          {service.cta_secondary_text}
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))}
@@ -247,77 +260,113 @@ export default function Services() {
               </p>
             </div>
 
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="relative pl-16"
-              >
-                <dt className="text-base font-semibold leading-7 text-white">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
-                    <ChartBarIcon className="h-6 w-6 text-white" aria-hidden="true" />
-                  </div>
-                  Proven ROI
-                </dt>
-                <dd className="mt-2 text-base leading-7 text-blue-100">
-                  Our clients see an average of 35% improvement in ROI within the first year of implementation.
-                </dd>
-              </motion.div>
+          {sections.why_choose.benefits && sections.why_choose.benefits.length > 0 ? (
+            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+              <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+                {sections.why_choose.benefits.map((benefit: any, index: number) => {
+                  const iconMap: Record<string, any> = {
+                    'chart': ChartBarIcon,
+                    'cog': CogIcon,
+                    'lightbulb': LightBulbIcon,
+                    'shield': ShieldCheckIcon,
+                  };
+                  const IconComponent = iconMap[benefit.icon] || ChartBarIcon;
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="relative pl-16"
-              >
-                <dt className="text-base font-semibold leading-7 text-white">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
-                    <CogIcon className="h-6 w-6 text-white" aria-hidden="true" />
-                  </div>
-                  Expert Team
-                </dt>
-                <dd className="mt-2 text-base leading-7 text-blue-100">
-                  Our team combines 50+ years of industry experience with PhD-level AI and machine learning expertise.
-                </dd>
-              </motion.div>
+                  return (
+                    <motion.div
+                      key={benefit.name || index}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="relative pl-16"
+                    >
+                      <dt className="text-base font-semibold leading-7 text-white">
+                        <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
+                          <IconComponent className="h-6 w-6 text-white" aria-hidden="true" />
+                        </div>
+                        {benefit.name}
+                      </dt>
+                      <dd className="mt-2 text-base leading-7 text-blue-100">
+                        {benefit.description}
+                      </dd>
+                    </motion.div>
+                  );
+                })}
+              </dl>
+            </div>
+          ) : (
+            <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+              <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="relative pl-16"
+                >
+                  <dt className="text-base font-semibold leading-7 text-white">
+                    <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
+                      <ChartBarIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                    </div>
+                    Proven ROI
+                  </dt>
+                  <dd className="mt-2 text-base leading-7 text-blue-100">
+                    Our clients see an average of 35% improvement in ROI within the first year of implementation.
+                  </dd>
+                </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="relative pl-16"
-              >
-                <dt className="text-base font-semibold leading-7 text-white">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
-                    <LightBulbIcon className="h-6 w-6 text-white" aria-hidden="true" />
-                  </div>
-                  Cutting-Edge Technology
-                </dt>
-                <dd className="mt-2 text-base leading-7 text-blue-100">
-                  We use the latest AI and machine learning technologies, continuously updated with market insights.
-                </dd>
-              </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  className="relative pl-16"
+                >
+                  <dt className="text-base font-semibold leading-7 text-white">
+                    <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
+                      <CogIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                    </div>
+                    Expert Team
+                  </dt>
+                  <dd className="mt-2 text-base leading-7 text-blue-100">
+                    Our team combines 50+ years of industry experience with PhD-level AI and machine learning expertise.
+                  </dd>
+                </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="relative pl-16"
-              >
-                <dt className="text-base font-semibold leading-7 text-white">
-                  <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
-                    <ShieldCheckIcon className="h-6 w-6 text-white" aria-hidden="true" />
-                  </div>
-                  Ongoing Support
-                </dt>
-                <dd className="mt-2 text-base leading-7 text-blue-100">
-                  24/7 support and continuous optimization ensure you get maximum value from our solutions.
-                </dd>
-              </motion.div>
-            </dl>
-          </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="relative pl-16"
+                >
+                  <dt className="text-base font-semibold leading-7 text-white">
+                    <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
+                      <LightBulbIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                    </div>
+                    Cutting-Edge Technology
+                  </dt>
+                  <dd className="mt-2 text-base leading-7 text-blue-100">
+                    We use the latest AI and machine learning technologies, continuously updated with market insights.
+                  </dd>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="relative pl-16"
+                >
+                  <dt className="text-base font-semibold leading-7 text-white">
+                    <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500">
+                      <ShieldCheckIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                    </div>
+                    Ongoing Support
+                  </dt>
+                  <dd className="mt-2 text-base leading-7 text-blue-100">
+                    24/7 support and continuous optimization ensure you get maximum value from our solutions.
+                  </dd>
+                </motion.div>
+              </dl>
+            </div>
+          )}
         </div>
       </section>
       )}

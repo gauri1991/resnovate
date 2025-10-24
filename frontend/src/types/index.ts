@@ -42,6 +42,12 @@ export interface Service {
   icon: string;
   order: number;
   is_active: boolean;
+  // CTA fields
+  show_pricing: boolean;
+  cta_primary_text: string;
+  cta_primary_link: string;
+  cta_secondary_text: string;
+  cta_secondary_link: string;
 }
 
 export interface Lead {

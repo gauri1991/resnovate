@@ -37,6 +37,9 @@ class ServiceSerializer(serializers.ModelSerializer):
             'id', 'name', 'slug', 'description', 'short_description', 'category',
             'base_price', 'estimated_duration', 'status', 'featured', 'display_order',
             'icon', 'bookings_count', 'created_at', 'updated_at',
+            # CTA fields
+            'show_pricing', 'cta_primary_text', 'cta_primary_link',
+            'cta_secondary_text', 'cta_secondary_link',
             # Legacy fields for compatibility
             'price_range', 'duration', 'features', 'order', 'is_active'
         ]
