@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   ChartBarIcon,
@@ -10,6 +11,7 @@ import {
   LightBulbIcon,
   ShieldCheckIcon,
   CheckIcon,
+  ArrowRightIcon,
 } from '@heroicons/react/24/outline';
 import LeadCaptureForm from '../../components/LeadCaptureForm';
 import { contentAPI } from '../../lib/api';
@@ -208,25 +210,41 @@ export default function Services() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="flex flex-col justify-between rounded-2xl bg-white p-8 shadow-lg ring-1 ring-slate-200"
+                  className="flex flex-col justify-between rounded-2xl bg-white p-8 shadow-lg ring-1 ring-slate-200 hover:shadow-xl hover:ring-blue-900 transition-all duration-300 group cursor-pointer"
                 >
-                  <div>
-                    <h3 className="text-xl font-semibold text-slate-900">{service.name}</h3>
-                    <p className="mt-4 text-sm text-slate-600">{service.description}</p>
-                    
-                    {service.features.length > 0 && (
-                      <ul className="mt-6 space-y-2">
-                        {service.features.map((feature, idx) => (
-                          <li key={idx} className="flex items-start">
-                            <CheckIcon className="h-5 w-5 text-blue-900 mr-2 mt-0.5 flex-shrink-0" />
-                            <span className="text-sm text-slate-600">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                  
-                  <div className="mt-8">
+                  <Link href={`/services/${service.slug}`} className="flex flex-col flex-1">
+                    <div>
+                      <h3 className="text-xl font-semibold text-slate-900 group-hover:text-blue-900 transition-colors duration-200">
+                        {service.name}
+                      </h3>
+                      <p className="mt-4 text-sm text-slate-600">{service.description}</p>
+
+                      {service.features.length > 0 && (
+                        <ul className="mt-6 space-y-2">
+                          {service.features.slice(0, 3).map((feature, idx) => (
+                            <li key={idx} className="flex items-start">
+                              <CheckIcon className="h-5 w-5 text-blue-900 mr-2 mt-0.5 flex-shrink-0" />
+                              <span className="text-sm text-slate-600">{feature}</span>
+                            </li>
+                          ))}
+                          {service.features.length > 3 && (
+                            <li className="text-sm text-slate-500 italic">
+                              +{service.features.length - 3} more features
+                            </li>
+                          )}
+                        </ul>
+                      )}
+                    </div>
+
+                    <div className="mt-8">
+                      <div className="flex items-center text-blue-900 font-semibold group-hover:text-blue-700 transition-colors duration-200">
+                        Learn More
+                        <ArrowRightIcon className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+                      </div>
+                    </div>
+                  </Link>
+
+                  <div className="mt-4 pt-4 border-t border-slate-200">
                     {service.show_pricing ? (
                       <div className="mb-4">
                         <div className="text-sm text-slate-500">Price Range</div>
@@ -238,12 +256,14 @@ export default function Services() {
                         <a
                           href={service.cta_primary_link}
                           className="block w-full rounded-md bg-blue-900 px-4 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900 transition-colors duration-200"
+                          onClick={(e) => e.stopPropagation()}
                         >
                           {service.cta_primary_text}
                         </a>
                         <a
                           href={service.cta_secondary_link}
                           className="block w-full rounded-md bg-white px-4 py-2 text-center text-sm font-semibold text-blue-900 shadow-sm ring-1 ring-inset ring-blue-900 hover:bg-slate-50 transition-colors duration-200"
+                          onClick={(e) => e.stopPropagation()}
                         >
                           {service.cta_secondary_text}
                         </a>

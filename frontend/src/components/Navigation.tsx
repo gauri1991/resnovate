@@ -73,36 +73,39 @@ export default function Navigation() {
           ) : (
             navigation.map((item) => (
               item.dropdown ? (
-                <div key={item.name} className="relative">
+                <div
+                  key={item.name}
+                  className="relative group"
+                  onMouseEnter={() => setDropdownOpen(true)}
+                  onMouseLeave={() => setDropdownOpen(false)}
+                >
                   <button
-                    onMouseEnter={() => setDropdownOpen(true)}
-                    onMouseLeave={() => setDropdownOpen(false)}
-                    className={`flex items-center text-sm font-semibold leading-6 transition-colors duration-200 ${
+                    className={`flex items-center text-sm font-semibold leading-6 transition-colors duration-200 py-2 ${
                       pathname.startsWith('/industries')
                         ? 'text-blue-900'
                         : 'text-slate-600 hover:text-blue-900'
                     }`}
                   >
                     {item.name}
-                    <ChevronDownIcon className="ml-1 h-4 w-4" />
+                    <ChevronDownIcon className={`ml-1 h-4 w-4 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  {dropdownOpen && (
-                    <div
-                      className="absolute left-0 top-full mt-2 w-64 rounded-md bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 z-50"
-                      onMouseEnter={() => setDropdownOpen(true)}
-                      onMouseLeave={() => setDropdownOpen(false)}
-                    >
+                  <div
+                    className={`absolute left-0 top-full pt-2 w-64 transition-all duration-200 ${
+                      dropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
+                    }`}
+                  >
+                    <div className="rounded-md bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5">
                       {item.dropdown.map((subItem) => (
                         <Link
                           key={subItem.name}
                           href={subItem.href}
-                          className="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-blue-900 transition-colors duration-200"
+                          className="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-blue-900 transition-colors duration-150"
                         >
                           {subItem.name}
                         </Link>
                       ))}
                     </div>
-                  )}
+                  </div>
                 </div>
               ) : (
                 <Link

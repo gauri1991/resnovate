@@ -173,13 +173,48 @@ export default function ServiceDetailPage() {
 
   useEffect(() => {
     const slug = params.slug as string;
-    
-    // Simulate API call
-    setTimeout(() => {
-      const foundService = mockServices[slug];
-      setService(foundService || null);
-      setLoading(false);
-    }, 500);
+
+    // Fetch real service data from API
+    const fetchService = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/services/`);
+        const services = await response.json();
+        const foundService = services.find((s: any) => s.slug === slug);
+
+        if (foundService) {
+          // Map API response to component format
+          setService({
+            id: foundService.id,
+            name: foundService.name,
+            slug: foundService.slug,
+            description: foundService.description,
+            shortDescription: foundService.short_description || foundService.description.substring(0, 150),
+            category: foundService.category || 'Service',
+            basePrice: parseFloat(foundService.base_price) || 0,
+            estimatedDuration: foundService.estimated_duration || 'Contact for details',
+            status: foundService.status || 'active',
+            featured: foundService.featured || false,
+            icon: foundService.icon || '⚙️',
+            features: foundService.features || [],
+            benefits: [],
+            process: [],
+            deliverables: [],
+            targetAudience: []
+          });
+        } else {
+          // Fallback to mock data if not found in API
+          setService(mockServices[slug] || null);
+        }
+      } catch (error) {
+        console.error('Failed to fetch service:', error);
+        // Fallback to mock data
+        setService(mockServices[slug] || null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchService();
   }, [params.slug]);
 
   if (loading) {
