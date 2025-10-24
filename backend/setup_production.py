@@ -99,6 +99,22 @@ def setup_production():
         print(f"⚠️  Error checking/seeding CMS sections: {e}")
         # Don't return False here as this isn't critical for deployment
 
+    # 5. Seed site settings if they don't exist
+    print("🌱 Checking site settings...")
+    try:
+        from apps.content.models import SiteSettings
+
+        if not SiteSettings.objects.exists():
+            print("🔧 Seeding site settings...")
+            execute_from_command_line(['manage.py', 'seed_site_settings'])
+            print("✅ Site settings seeded successfully!")
+        else:
+            print(f"✅ Site settings already exist")
+
+    except Exception as e:
+        print(f"⚠️  Error checking/seeding site settings: {e}")
+        # Don't return False here as this isn't critical for deployment
+
     print("🎉 Production setup completed successfully!")
     return True
 
