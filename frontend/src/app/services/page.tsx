@@ -112,18 +112,28 @@ export default function Services() {
                       </div>
 
                       <div className="mt-8">
-                        <div className="mb-4">
-                          <div className="text-sm text-slate-500">Starting from</div>
-                          <div className="text-lg font-semibold text-slate-900">{service.priceRange}</div>
-                          <div className="text-sm text-slate-500">Timeline: {service.duration}</div>
-                        </div>
-
-                        <button
-                          onClick={() => setSelectedService(service.name)}
-                          className="w-full rounded-md bg-blue-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900 transition-colors duration-200"
-                        >
-                          Learn More
-                        </button>
+                        {service.showPricing ? (
+                          <div className="mb-4">
+                            <div className="text-sm text-slate-500">Starting from</div>
+                            <div className="text-lg font-semibold text-slate-900">{service.priceRange}</div>
+                            <div className="text-sm text-slate-500">Timeline: {service.duration}</div>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            <a
+                              href={service.ctaPrimaryLink || '/contact'}
+                              className="block w-full rounded-md bg-blue-900 px-4 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-blue-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-900 transition-colors duration-200"
+                            >
+                              {service.ctaPrimaryText || 'Get Quick Quote'}
+                            </a>
+                            <a
+                              href={service.ctaSecondaryLink || '/book-consultation'}
+                              className="block w-full rounded-md bg-white px-4 py-2 text-center text-sm font-semibold text-blue-900 shadow-sm ring-1 ring-inset ring-blue-900 hover:bg-slate-50 transition-colors duration-200"
+                            >
+                              {service.ctaSecondaryText || 'Schedule Consultation'}
+                            </a>
+                          </div>
+                        )}
                       </div>
                     </motion.div>
                   );
