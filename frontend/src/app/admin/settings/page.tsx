@@ -890,6 +890,15 @@ export default function SettingsPage() {
               <option value="research_insights">Research Insights Page</option>
               <option value="contact">Contact Page</option>
               <option value="resources">Resources Page</option>
+              <optgroup label="Industry Pages">
+                <option value="industries-healthcare">Healthcare & Life Sciences</option>
+                <option value="industries-financial">Financial Services</option>
+                <option value="industries-manufacturing">Manufacturing</option>
+                <option value="industries-retail">Retail & E-commerce</option>
+                <option value="industries-technology">Technology & Software</option>
+                <option value="industries-energy">Energy & Utilities</option>
+                <option value="industries-government">Government & Public Sector</option>
+              </optgroup>
             </select>
           </div>
         </div>
