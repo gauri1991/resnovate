@@ -211,6 +211,14 @@ class PageSection(models.Model):
         ('research_insights', 'Research Insights Page'),
         ('contact', 'Contact Page'),
         ('resources', 'Resources Page'),
+        # Industry Pages
+        ('industries-healthcare', 'Healthcare & Life Sciences'),
+        ('industries-financial', 'Financial Services'),
+        ('industries-manufacturing', 'Manufacturing'),
+        ('industries-retail', 'Retail & E-commerce'),
+        ('industries-technology', 'Technology & Software'),
+        ('industries-energy', 'Energy & Utilities'),
+        ('industries-government', 'Government & Public Sector'),
     ]
 
     page_identifier = models.CharField(max_length=50, choices=PAGE_CHOICES)
