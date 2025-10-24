@@ -3,8 +3,8 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny, IsAuthenticated
 from django.db.models import Count
-from .models import BlogPost, CaseStudy, Service, MediaFile, PageSection
-from .serializers import BlogPostSerializer, CaseStudySerializer, ServiceSerializer, MediaFileSerializer, PageSectionSerializer
+from .models import BlogPost, CaseStudy, Service, MediaFile, PageSection, SiteSettings
+from .serializers import BlogPostSerializer, CaseStudySerializer, ServiceSerializer, MediaFileSerializer, PageSectionSerializer, SiteSettingsSerializer
 
 
 class BlogPostViewSet(viewsets.ModelViewSet):
@@ -95,24 +95,17 @@ class PageSectionViewSet(viewsets.ModelViewSet):
     def by_page(self, request):
         """Get all sections for a specific page grouped by page
 
-        Authenticated admin users see all sections (enabled + disabled) for management.
-        Public users only see enabled sections.
+        Returns all sections (enabled + disabled) for admin management.
+        Frontend should filter based on context (admin vs public).
         """
         pages = PageSection.PAGE_CHOICES
         result = {}
 
         for page_key, page_name in pages:
-            # Authenticated admin users see all sections to manage them
-            # Public users only see enabled sections
-            if request.user.is_authenticated:
-                sections = PageSection.objects.filter(
-                    page_identifier=page_key
-                ).order_by('order')
-            else:
-                sections = PageSection.objects.filter(
-                    page_identifier=page_key,
-                    enabled=True
-                ).order_by('order')
+            # Return all sections so admin can manage them
+            sections = PageSection.objects.filter(
+                page_identifier=page_key
+            ).order_by('order')
 
             result[page_key] = {
                 'name': page_name,
@@ -138,6 +131,28 @@ class PageSectionViewSet(viewsets.ModelViewSet):
                 pass
 
         return Response({'status': 'success', 'message': 'Sections reordered successfully'})
+
+
+class SiteSettingsViewSet(viewsets.ModelViewSet):
+    serializer_class = SiteSettingsSerializer
+    permission_classes = [AllowAny]  # Allow access for development
+    http_method_names = ['get', 'put', 'patch']  # Only allow read and update, not create/delete
+
+    def get_queryset(self):
+        # Always return the singleton instance
+        return SiteSettings.objects.all()
+
+    def get_object(self):
+        # Get or create the singleton instance
+        obj, created = SiteSettings.objects.get_or_create(setting_type='global')
+        return obj
+
+    @action(detail=False, methods=['GET'], permission_classes=[AllowAny])
+    def current(self, request):
+        """Get the current site settings"""
+        obj, created = SiteSettings.objects.get_or_create(setting_type='global')
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
 
 
 @api_view(['GET'])

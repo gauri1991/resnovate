@@ -22,11 +22,14 @@ import {
   ArrowsUpDownIcon,
   EyeIcon,
   EyeSlashIcon,
+  ArrowRightIcon,
 } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 import { api, cmsAPI } from '@/lib/api';
 import { PageSection, CMSPages } from '@/types';
 import DynamicFormBuilder from '@/components/cms/DynamicFormBuilder';
 import FieldEditor from '@/components/cms/FieldEditor';
+import SectionFormEditor from '@/components/cms/SectionFormEditor';
 
 interface SiteSettings {
   siteName: string;
@@ -289,7 +292,10 @@ export default function SettingsPage() {
   const fetchCMSPages = async () => {
     try {
       setLoading(true);
+      console.log('Fetching CMS pages...');
+      console.log('Auth token:', localStorage.getItem('access_token'));
       const response = await cmsAPI.getPages();
+      console.log('CMS API Response:', response.data);
       setCmsPages(response.data);
     } catch (error) {
       console.error('Error fetching CMS pages:', error);
@@ -408,6 +414,23 @@ export default function SettingsPage() {
       animate={{ opacity: 1, y: 0 }}
       className="space-y-6"
     >
+      {/* Global Site Settings Link Card */}
+      <Link href="/admin/settings/site-settings">
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 rounded-xl shadow-sm border border-blue-600 hover:shadow-lg transition-all duration-200 cursor-pointer hover:from-blue-600 hover:to-blue-700">
+          <h3 className="text-lg font-semibold text-white mb-2 flex items-center">
+            <Cog6ToothIcon className="h-6 w-6 mr-2" />
+            Global Site Settings
+          </h3>
+          <p className="text-blue-50 text-sm mb-3">
+            Edit navigation menu, footer content, social links, and SEO metadata for your entire website
+          </p>
+          <div className="inline-flex items-center text-sm font-medium text-white bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20 transition-colors">
+            Manage Site Settings
+            <ArrowRightIcon className="h-4 w-4 ml-2" />
+          </div>
+        </div>
+      </Link>
+
       <form onSubmit={handleSubmitSite(handleSaveSettings)} className="space-y-6">
         {/* Site Information */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -824,7 +847,16 @@ export default function SettingsPage() {
   );
 
   const renderCMSSettings = () => {
-    const currentPageSections = cmsPages[selectedPage]?.sections || [];
+    const allSections = cmsPages[selectedPage]?.sections || [];
+    const currentPageSections = allSections; // Always show all sections
+
+    const disabledCount = allSections.filter(section => !section.enabled).length;
+
+    // Debug logging
+    console.log('CMS Debug - Selected Page:', selectedPage);
+    console.log('CMS Debug - All Sections:', allSections);
+    console.log('CMS Debug - Disabled Count:', disabledCount);
+    console.log('CMS Debug - Current Page Sections:', currentPageSections);
 
     return (
       <motion.div
@@ -870,85 +902,89 @@ export default function SettingsPage() {
               <span className="ml-3 text-gray-600">Loading sections...</span>
             </div>
           </div>
-        ) : currentPageSections.length > 0 ? (
+        ) : allSections.length > 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h4 className="text-lg font-medium text-gray-900">
-                {cmsPages[selectedPage]?.name} Sections
-              </h4>
-              <p className="text-sm text-gray-600">
-                Manage sections for this page
-              </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-lg font-medium text-gray-900">
+                    {cmsPages[selectedPage]?.name} Sections
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    Manage sections for this page {disabledCount > 0 && `(${disabledCount} disabled)`}
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="divide-y divide-gray-200">
               {currentPageSections.map((section) => (
-                <div
-                  key={section.id}
-                  className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex items-center space-x-4 flex-1">
-                    <div className="flex items-center">
-                      <ArrowsUpDownIcon className="h-5 w-5 text-gray-400 cursor-move" />
-                    </div>
-
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3">
-                        <h5 className="text-sm font-medium text-gray-900">
-                          {section.section_name}
-                        </h5>
-                        <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
-                          {section.section_key}
-                        </span>
-                      </div>
-                      {section.content && Object.keys(section.content).length > 0 && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          {Object.keys(section.content).length} content field(s)
-                        </p>
-                      )}
-                    </div>
+              <div
+                key={section.id}
+                className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center space-x-4 flex-1">
+                  <div className="flex items-center">
+                    <ArrowsUpDownIcon className="h-5 w-5 text-gray-400 cursor-move" />
                   </div>
 
-                  <div className="flex items-center space-x-3">
-                    {/* Status Badge */}
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        section.enabled
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {section.enabled ? 'Enabled' : 'Disabled'}
-                    </span>
-
-                    {/* Toggle Button */}
-                    <button
-                      onClick={() => handleToggleSection(section)}
-                      className={`p-2 rounded-lg transition-colors ${
-                        section.enabled
-                          ? 'text-red-600 hover:bg-red-50'
-                          : 'text-green-600 hover:bg-green-50'
-                      }`}
-                      title={section.enabled ? 'Disable section' : 'Enable section'}
-                    >
-                      {section.enabled ? (
-                        <EyeSlashIcon className="h-5 w-5" />
-                      ) : (
-                        <EyeIcon className="h-5 w-5" />
-                      )}
-                    </button>
-
-                    {/* Edit Button */}
-                    <button
-                      onClick={() => handleEditSection(section)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Edit section content"
-                    >
-                      <PencilIcon className="h-5 w-5" />
-                    </button>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3">
+                      <h5 className="text-sm font-medium text-gray-900">
+                        {section.section_name}
+                      </h5>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+                        {section.section_key}
+                      </span>
+                    </div>
+                    {section.content && Object.keys(section.content).length > 0 && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        {Object.keys(section.content).length} content field(s)
+                      </p>
+                    )}
                   </div>
                 </div>
-              ))}
+
+                <div className="flex items-center space-x-3">
+                  {/* Status Badge */}
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      section.enabled
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    {section.enabled ? 'Enabled' : 'Disabled'}
+                  </span>
+
+                  {/* Toggle Button */}
+                  <button
+                    onClick={() => handleToggleSection(section)}
+                    className={`p-2 rounded-lg transition-colors ${
+                      section.enabled
+                        ? 'text-red-600 hover:bg-red-50'
+                        : 'text-green-600 hover:bg-green-50'
+                    }`}
+                    title={section.enabled ? 'Disable section' : 'Enable section'}
+                  >
+                    {section.enabled ? (
+                      <EyeSlashIcon className="h-5 w-5" />
+                    ) : (
+                      <EyeIcon className="h-5 w-5" />
+                    )}
+                  </button>
+
+                  {/* Edit Button */}
+                  <button
+                    onClick={() => handleEditSection(section)}
+                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    title="Edit section content"
+                  >
+                    <PencilIcon className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+            ))}
             </div>
           </div>
         ) : (
@@ -1077,11 +1113,50 @@ export default function SettingsPage() {
                     {editorViewMode === 'form' ? (
                       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                         {Object.keys(editingSection.content || {}).length > 0 ? (
-                          <DynamicFormBuilder
-                            content={editingSection.content || {}}
-                            onChange={handleContentChange}
-                            onAddField={() => setShowFieldEditor(true)}
-                          />
+                          <>
+                            {/* Try custom form editor first */}
+                            {(() => {
+                              const customFormSections = [
+                                'hero', 'header', 'stats', 'metrics', 'metrics_data',
+                                'features', 'values', 'core_services', 'cta',
+                                'milestones', 'process_steps', 'process',
+                                'overview', 'faqs', 'offices', 'contact_info',
+                                'testimonials', 'team',
+                                'contact_methods_header', 'form_section_header', 'emergency_contact',
+                                'why_choose', 'library', 'educational', 'featured',
+                                'services_overview', 'case_studies', 'services_list', 'tools',
+                                'featured_topics_data', 'featured_resources_data',
+                                'resource_categories_data', 'tools_data'
+                              ];
+                              const hasCustomForm = customFormSections.includes(editingSection.section_key);
+                              const customForm = (
+                                <SectionFormEditor
+                                  sectionKey={editingSection.section_key}
+                                  content={editingSection.content || {}}
+                                  onChange={handleContentChange}
+                                />
+                              );
+
+                              if (hasCustomForm) {
+                                return customForm;
+                              } else {
+                                // Fallback to DynamicFormBuilder for sections without custom forms
+                                return (
+                                  <div>
+                                    <div className="mb-3 flex items-center justify-between pb-3 border-b border-gray-200">
+                                      <h4 className="text-sm font-semibold text-gray-700">Section Content</h4>
+                                      <span className="text-xs text-gray-500 bg-blue-100 text-blue-700 px-2 py-1 rounded">Generic Form Editor</span>
+                                    </div>
+                                    <DynamicFormBuilder
+                                      content={editingSection.content || {}}
+                                      onChange={handleContentChange}
+                                      onAddField={() => setShowFieldEditor(true)}
+                                    />
+                                  </div>
+                                );
+                              }
+                            })()}
+                          </>
                         ) : (
                           <div className="text-center py-8">
                             <p className="text-sm text-gray-500 mb-4">No content fields yet</p>

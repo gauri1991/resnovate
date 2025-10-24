@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import BlogPost, CaseStudy, Service, MediaFile, PageSection
+from .models import BlogPost, CaseStudy, Service, MediaFile, PageSection, SiteSettings
 
 
 class BlogPostSerializer(serializers.ModelSerializer):
@@ -70,3 +70,15 @@ class PageSectionSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at'
         ]
         read_only_fields = ['created_at', 'updated_at']
+
+
+class SiteSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteSettings
+        fields = [
+            'id', 'setting_type', 'navigation_items', 'footer_description',
+            'footer_links', 'social_links', 'copyright_text', 'site_title',
+            'site_description', 'site_keywords', 'og_image', 'twitter_handle',
+            'contact_email', 'contact_phone', 'contact_address', 'updated_at'
+        ]
+        read_only_fields = ['updated_at', 'setting_type']

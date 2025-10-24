@@ -4,13 +4,15 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Bars3Icon, XMarkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { useSiteSettings, NavigationItem } from '@/hooks/useSiteSettings';
 
-const navigation = [
+// Fallback navigation items if CMS data fails to load
+const fallbackNavigation: NavigationItem[] = [
   { name: 'Home', href: '/' },
   { name: 'About', href: '/about' },
   { name: 'Services', href: '/services' },
-  { 
-    name: 'Industries', 
+  {
+    name: 'Industries',
     href: '/industries',
     dropdown: [
       { name: 'Healthcare & Life Sciences', href: '/industries/healthcare' },
@@ -32,6 +34,12 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const pathname = usePathname();
+  const { settings, loading } = useSiteSettings();
+
+  // Use CMS navigation items or fallback
+  const navigation = settings?.navigation_items && settings.navigation_items.length > 0
+    ? settings.navigation_items
+    : fallbackNavigation;
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">

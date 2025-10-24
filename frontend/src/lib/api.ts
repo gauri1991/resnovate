@@ -282,11 +282,15 @@ export const marketingAPI = {
 
 export const cmsAPI = {
   // Get all pages with their sections
-  getPages: () => api.get('/cms/page-sections/by_page/'),
+  getPages: () => api.get('/cms/page-sections/by_page/', {
+    params: { _t: Date.now() } // Cache busting
+  }),
 
   // Get sections for a specific page
   getSections: async (page: string) => {
-    const response = await api.get('/cms/page-sections/by_page/');
+    const response = await api.get('/cms/page-sections/by_page/', {
+      params: { _t: Date.now() } // Cache busting
+    });
     return { data: response.data[page]?.sections || [] };
   },
 
@@ -304,6 +308,14 @@ export const cmsAPI = {
 
   // Reorder sections
   reorderSections: (sections: any[]) => api.post('/cms/page-sections/reorder/', { sections }),
+
+  // Site settings
+  getSiteSettings: () => api.get('/cms/site-settings/current/', {
+    params: { _t: Date.now() } // Cache busting
+  }),
+
+  // Update site settings
+  updateSiteSettings: (id: number, data: any) => api.patch(`/cms/site-settings/${id}/`, data),
 };
 
 export default api;

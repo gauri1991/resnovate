@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BlogPost, CaseStudy, Service, PageSection
+from .models import BlogPost, CaseStudy, Service, PageSection, SiteSettings
 
 
 @admin.register(BlogPost)
@@ -35,3 +35,16 @@ class PageSectionAdmin(admin.ModelAdmin):
     search_fields = ['section_name', 'section_key']
     ordering = ['page_identifier', 'order']
     list_editable = ['enabled', 'order']
+
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    list_display = ['setting_type', 'updated_at']
+
+    def has_add_permission(self, request):
+        # Prevent adding more than one instance
+        return not SiteSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        # Prevent deletion of the singleton instance
+        return False

@@ -223,3 +223,45 @@ class PageSection(models.Model):
 
     def __str__(self):
         return f"{self.get_page_identifier_display()} - {self.section_name}"
+
+
+class SiteSettings(models.Model):
+    """Model for global site settings (navigation, footer, metadata)"""
+
+    # Singleton pattern - only one instance should exist
+    setting_type = models.CharField(max_length=50, unique=True, default='global')
+
+    # Navigation settings
+    navigation_items = models.JSONField(default=list, blank=True, help_text='Main navigation menu items')
+
+    # Footer settings
+    footer_description = models.TextField(blank=True, help_text='Company description in footer')
+    footer_links = models.JSONField(default=list, blank=True, help_text='Footer navigation links')
+    social_links = models.JSONField(default=list, blank=True, help_text='Social media links')
+    copyright_text = models.CharField(max_length=200, blank=True, help_text='Copyright text')
+
+    # SEO/Metadata settings
+    site_title = models.CharField(max_length=200, blank=True, help_text='Default site title')
+    site_description = models.TextField(max_length=500, blank=True, help_text='Default site description')
+    site_keywords = models.TextField(blank=True, help_text='Default SEO keywords')
+    og_image = models.URLField(blank=True, help_text='Default Open Graph image URL')
+    twitter_handle = models.CharField(max_length=50, blank=True, help_text='Twitter handle (without @)')
+
+    # Contact info
+    contact_email = models.EmailField(blank=True)
+    contact_phone = models.CharField(max_length=50, blank=True)
+    contact_address = models.TextField(blank=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Site Settings'
+        verbose_name_plural = 'Site Settings'
+
+    def __str__(self):
+        return 'Site Settings'
+
+    def save(self, *args, **kwargs):
+        # Ensure only one instance exists (singleton pattern)
+        self.setting_type = 'global'
+        super().save(*args, **kwargs)
