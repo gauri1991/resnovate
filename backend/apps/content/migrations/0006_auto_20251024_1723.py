@@ -6,10 +6,10 @@ import django.db.models.deletion
 import django.utils.timezone
 
 
-def check_and_skip_if_exists(apps, schema_editor):
-    """Check if BlogPost table exists, skip creation if it does"""
-    # Check if table exists
+def create_blogpost_table_if_not_exists(apps, schema_editor):
+    """Create BlogPost table only if it doesn't exist"""
     with schema_editor.connection.cursor() as cursor:
+        # Check if table exists
         if schema_editor.connection.vendor == 'postgresql':
             cursor.execute("""
                 SELECT EXISTS (
@@ -28,11 +28,65 @@ def check_and_skip_if_exists(apps, schema_editor):
         else:
             table_exists = False
 
-    if table_exists:
-        print("✓ BlogPost table already exists, skipping creation")
-        return
-    else:
-        print("✗ BlogPost table does not exist yet - this migration will be handled by Django ORM")
+        if table_exists:
+            print("✓ BlogPost table already exists, skipping creation")
+            return
+
+        print("✗ Creating BlogPost table...")
+
+        # Create the table manually for both PostgreSQL and SQLite
+        if schema_editor.connection.vendor == 'postgresql':
+            cursor.execute("""
+                CREATE TABLE content_blogpost (
+                    id BIGSERIAL PRIMARY KEY,
+                    title VARCHAR(200) NOT NULL,
+                    slug VARCHAR(200) UNIQUE NOT NULL,
+                    content TEXT NOT NULL,
+                    excerpt VARCHAR(500) NOT NULL,
+                    featured_image VARCHAR(100),
+                    status VARCHAR(20) NOT NULL DEFAULT 'draft',
+                    published_at TIMESTAMP WITH TIME ZONE,
+                    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    seo_title VARCHAR(200) NOT NULL,
+                    seo_description VARCHAR(300) NOT NULL,
+                    tags JSONB NOT NULL DEFAULT '[]',
+                    read_time INTEGER NOT NULL DEFAULT 5,
+                    views INTEGER NOT NULL DEFAULT 0,
+                    is_published BOOLEAN NOT NULL DEFAULT FALSE,
+                    author_id INTEGER REFERENCES auth_user(id) ON DELETE SET NULL
+                );
+                CREATE INDEX content_blogpost_slug_idx ON content_blogpost(slug);
+                CREATE INDEX content_blogpost_author_id_idx ON content_blogpost(author_id);
+                CREATE INDEX content_blogpost_status_idx ON content_blogpost(status);
+            """)
+        elif schema_editor.connection.vendor == 'sqlite':
+            cursor.execute("""
+                CREATE TABLE content_blogpost (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title VARCHAR(200) NOT NULL,
+                    slug VARCHAR(200) UNIQUE NOT NULL,
+                    content TEXT NOT NULL,
+                    excerpt VARCHAR(500) NOT NULL,
+                    featured_image VARCHAR(100),
+                    status VARCHAR(20) NOT NULL DEFAULT 'draft',
+                    published_at DATETIME,
+                    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    seo_title VARCHAR(200) NOT NULL,
+                    seo_description VARCHAR(300) NOT NULL,
+                    tags TEXT NOT NULL DEFAULT '[]',
+                    read_time INTEGER NOT NULL DEFAULT 5,
+                    views INTEGER NOT NULL DEFAULT 0,
+                    is_published INTEGER NOT NULL DEFAULT 0,
+                    author_id INTEGER REFERENCES auth_user(id) ON DELETE SET NULL
+                )
+            """)
+            cursor.execute("CREATE INDEX content_blogpost_slug_idx ON content_blogpost(slug)")
+            cursor.execute("CREATE INDEX content_blogpost_author_id_idx ON content_blogpost(author_id)")
+            cursor.execute("CREATE INDEX content_blogpost_status_idx ON content_blogpost(status)")
+
+        print("✓ BlogPost table created successfully")
 
 
 class Migration(migrations.Migration):
@@ -43,10 +97,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # Just check and print status, don't create table
-        # The table already exists in production from previous migrations
         migrations.RunPython(
-            check_and_skip_if_exists,
+            create_blogpost_table_if_not_exists,
             migrations.RunPython.noop,
         ),
     ]
