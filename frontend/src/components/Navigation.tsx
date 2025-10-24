@@ -36,10 +36,10 @@ export default function Navigation() {
   const pathname = usePathname();
   const { settings, loading } = useSiteSettings();
 
-  // Use CMS navigation items or fallback
+  // Use CMS navigation items, or fallback only if loading failed AND no settings
   const navigation = settings?.navigation_items && settings.navigation_items.length > 0
     ? settings.navigation_items
-    : fallbackNavigation;
+    : (!loading ? fallbackNavigation : []);
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
@@ -63,53 +63,62 @@ export default function Navigation() {
           </button>
         </div>
         <div className="hidden lg:flex lg:gap-x-8">
-          {navigation.map((item) => (
-            item.dropdown ? (
-              <div key={item.name} className="relative">
-                <button
-                  onMouseEnter={() => setDropdownOpen(true)}
-                  onMouseLeave={() => setDropdownOpen(false)}
-                  className={`flex items-center text-sm font-semibold leading-6 transition-colors duration-200 ${
-                    pathname.startsWith('/industries')
+          {loading ? (
+            // Loading skeleton - reserve space to prevent layout shift
+            <div className="flex gap-x-8">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="h-6 w-20 bg-slate-200 rounded animate-pulse"></div>
+              ))}
+            </div>
+          ) : (
+            navigation.map((item) => (
+              item.dropdown ? (
+                <div key={item.name} className="relative">
+                  <button
+                    onMouseEnter={() => setDropdownOpen(true)}
+                    onMouseLeave={() => setDropdownOpen(false)}
+                    className={`flex items-center text-sm font-semibold leading-6 transition-colors duration-200 ${
+                      pathname.startsWith('/industries')
+                        ? 'text-blue-900'
+                        : 'text-slate-600 hover:text-blue-900'
+                    }`}
+                  >
+                    {item.name}
+                    <ChevronDownIcon className="ml-1 h-4 w-4" />
+                  </button>
+                  {dropdownOpen && (
+                    <div
+                      className="absolute left-0 top-full mt-2 w-64 rounded-md bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 z-50"
+                      onMouseEnter={() => setDropdownOpen(true)}
+                      onMouseLeave={() => setDropdownOpen(false)}
+                    >
+                      {item.dropdown.map((subItem) => (
+                        <Link
+                          key={subItem.name}
+                          href={subItem.href}
+                          className="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-blue-900 transition-colors duration-200"
+                        >
+                          {subItem.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`text-sm font-semibold leading-6 transition-colors duration-200 ${
+                    pathname === item.href
                       ? 'text-blue-900'
                       : 'text-slate-600 hover:text-blue-900'
                   }`}
                 >
                   {item.name}
-                  <ChevronDownIcon className="ml-1 h-4 w-4" />
-                </button>
-                {dropdownOpen && (
-                  <div 
-                    className="absolute left-0 top-full mt-2 w-64 rounded-md bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 z-50"
-                    onMouseEnter={() => setDropdownOpen(true)}
-                    onMouseLeave={() => setDropdownOpen(false)}
-                  >
-                    {item.dropdown.map((subItem) => (
-                      <Link
-                        key={subItem.name}
-                        href={subItem.href}
-                        className="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-blue-900 transition-colors duration-200"
-                      >
-                        {subItem.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`text-sm font-semibold leading-6 transition-colors duration-200 ${
-                  pathname === item.href
-                    ? 'text-blue-900'
-                    : 'text-slate-600 hover:text-blue-900'
-                }`}
-              >
-                {item.name}
-              </Link>
-            )
-          ))}
+                </Link>
+              )
+            ))
+          )}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Link
@@ -145,38 +154,47 @@ export default function Navigation() {
             <div className="mt-6 flow-root">
               <div className="-my-6 divide-y divide-slate-500/10">
                 <div className="space-y-2 py-6">
-                  {navigation.map((item) => (
-                    item.dropdown ? (
-                      <div key={item.name} className="space-y-1">
-                        <div className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-900">
-                          {item.name}
+                  {loading ? (
+                    // Loading skeleton for mobile menu
+                    <div className="space-y-2">
+                      {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="h-10 bg-slate-200 rounded animate-pulse"></div>
+                      ))}
+                    </div>
+                  ) : (
+                    navigation.map((item) => (
+                      item.dropdown ? (
+                        <div key={item.name} className="space-y-1">
+                          <div className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-slate-900">
+                            {item.name}
+                          </div>
+                          {item.dropdown.map((subItem) => (
+                            <Link
+                              key={subItem.name}
+                              href={subItem.href}
+                              className="ml-4 -mx-3 block rounded-lg px-3 py-2 text-sm leading-7 text-slate-600 hover:bg-slate-50 hover:text-blue-900 transition-colors duration-200"
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              {subItem.name}
+                            </Link>
+                          ))}
                         </div>
-                        {item.dropdown.map((subItem) => (
-                          <Link
-                            key={subItem.name}
-                            href={subItem.href}
-                            className="ml-4 -mx-3 block rounded-lg px-3 py-2 text-sm leading-7 text-slate-600 hover:bg-slate-50 hover:text-blue-900 transition-colors duration-200"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            {subItem.name}
-                          </Link>
-                        ))}
-                      </div>
-                    ) : (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className={`-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 transition-colors duration-200 ${
-                          pathname === item.href
-                            ? 'bg-slate-50 text-blue-900'
-                            : 'text-slate-900 hover:bg-slate-50'
-                        }`}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {item.name}
-                      </Link>
-                    )
-                  ))}
+                      ) : (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          className={`-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 transition-colors duration-200 ${
+                            pathname === item.href
+                              ? 'bg-slate-50 text-blue-900'
+                              : 'text-slate-900 hover:bg-slate-50'
+                          }`}
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {item.name}
+                        </Link>
+                      )
+                    ))
+                  )}
                 </div>
                 <div className="py-6">
                   <Link
