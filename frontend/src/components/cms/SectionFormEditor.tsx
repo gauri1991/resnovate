@@ -317,7 +317,12 @@ const SectionFormEditor: React.FC<SectionFormEditorProps> = ({
                 ...(fieldName === 'services' && {
                   features: [],
                   priceRange: '',
-                  duration: ''
+                  duration: '',
+                  showPricing: false,
+                  ctaPrimaryText: 'Get Quick Quote',
+                  ctaPrimaryLink: '/contact',
+                  ctaSecondaryText: 'Schedule Consultation',
+                  ctaSecondaryLink: '/book-consultation'
                 })
               })}
               className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg"
@@ -410,6 +415,83 @@ const SectionFormEditor: React.FC<SectionFormEditorProps> = ({
                         className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                         placeholder="Feature 1, Feature 2, Feature 3"
                       />
+                    </div>
+
+                    <div className="border-t border-gray-200 pt-3 mt-2">
+                      <div className="flex items-center space-x-2 mb-3">
+                        <input
+                          type="checkbox"
+                          id={`show-pricing-${index}`}
+                          checked={item.showPricing || false}
+                          onChange={(e) => handleArrayItemChange(fieldName, index, 'showPricing', e.target.checked)}
+                          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <label htmlFor={`show-pricing-${index}`} className="text-xs font-medium text-gray-700">
+                          Show Pricing (uncheck to show CTA buttons instead)
+                        </label>
+                      </div>
+
+                      {!item.showPricing && (
+                        <div className="space-y-3 bg-blue-50 p-3 rounded-lg">
+                          <div className="text-xs font-semibold text-blue-900 mb-2">CTA Button Settings</div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">
+                                Primary Button Text
+                              </label>
+                              <input
+                                type="text"
+                                value={item.ctaPrimaryText || 'Get Quick Quote'}
+                                onChange={(e) => handleArrayItemChange(fieldName, index, 'ctaPrimaryText', e.target.value)}
+                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                                placeholder="Get Quick Quote"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">
+                                Primary Button Link
+                              </label>
+                              <input
+                                type="text"
+                                value={item.ctaPrimaryLink || '/contact'}
+                                onChange={(e) => handleArrayItemChange(fieldName, index, 'ctaPrimaryLink', e.target.value)}
+                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                                placeholder="/contact"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">
+                                Secondary Button Text
+                              </label>
+                              <input
+                                type="text"
+                                value={item.ctaSecondaryText || 'Schedule Consultation'}
+                                onChange={(e) => handleArrayItemChange(fieldName, index, 'ctaSecondaryText', e.target.value)}
+                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                                placeholder="Schedule Consultation"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">
+                                Secondary Button Link
+                              </label>
+                              <input
+                                type="text"
+                                value={item.ctaSecondaryLink || '/book-consultation'}
+                                onChange={(e) => handleArrayItemChange(fieldName, index, 'ctaSecondaryLink', e.target.value)}
+                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+                                placeholder="/book-consultation"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
