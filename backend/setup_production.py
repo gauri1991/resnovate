@@ -115,6 +115,26 @@ def setup_production():
         print(f"⚠️  Error checking/seeding site settings: {e}")
         # Don't return False here as this isn't critical for deployment
 
+    # 6. Populate industry pages
+    print("🏭 Populating industry pages...")
+    try:
+        from apps.content.models import PageSection
+
+        # Check if industry pages are already populated
+        industry_sections = PageSection.objects.filter(page_identifier__startswith='industries-')
+
+        if industry_sections.count() < 20:  # Should have ~7 industries * ~7 sections each
+            print("🔧 Populating industry pages data...")
+            execute_from_command_line(['manage.py', 'populate_industry_pages'])
+            final_count = PageSection.objects.filter(page_identifier__startswith='industries-').count()
+            print(f"✅ Industry pages populated successfully! ({final_count} sections)")
+        else:
+            print(f"✅ Industry pages already populated ({industry_sections.count()} sections)")
+
+    except Exception as e:
+        print(f"⚠️  Error populating industry pages: {e}")
+        # Don't return False here as this isn't critical for deployment
+
     print("🎉 Production setup completed successfully!")
     return True
 
